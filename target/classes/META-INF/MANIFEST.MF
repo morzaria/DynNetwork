@@ -1,0 +1,43 @@
+Manifest-Version: 1.0
+Built-By: Jimmy
+Tool: Bnd-1.15.0
+Bundle-Name: DynNetwork
+Created-By: Apache Maven Bundle Plugin
+Build-Jdk: 1.6.0_01
+Bundle-Version: 1.4.0.beta
+Bnd-LastModified: 1370198153471
+Bundle-ManifestVersion: 2
+Bundle-Activator: org.cytoscape.dyn.internal.CyActivator
+Bundle-Description: Written By Sabina Sara Pfister, 2012
+Import-Package: javax.imageio;resolution:=optional,javax.swing;resolut
+ ion:=optional,javax.swing.border;resolution:=optional,javax.swing.eve
+ nt;resolution:=optional,javax.xml.parsers;resolution:=optional,org.cy
+ toscape.application;resolution:=optional;version="[3.1,4)",org.cytosc
+ ape.application.events;resolution:=optional;version="[3.1,4)",org.cyt
+ oscape.application.swing;resolution:=optional;version="[3.1,4)",org.c
+ ytoscape.event;resolution:=optional;version="[3.1,4)",org.cytoscape.i
+ o;resolution:=optional;version="[3.1,4)",org.cytoscape.io.read;resolu
+ tion:=optional;version="[3.1,4)",org.cytoscape.io.util;resolution:=op
+ tional;version="[3.1,4)",org.cytoscape.model;resolution:=optional;ver
+ sion="[3.1,4)",org.cytoscape.model.subnetwork;resolution:=optional;ve
+ rsion="[3.1,4)",org.cytoscape.service.util;resolution:=optional;versi
+ on="[3.1,4)",org.cytoscape.session;resolution:=optional;version="[3.1
+ ,4)",org.cytoscape.task;resolution:=optional;version="[3.1,4)",org.cy
+ toscape.task.select;resolution:=optional;version="[3.1,4)",org.cytosc
+ ape.util.swing;resolution:=optional;version="[3.1,4)",org.cytoscape.v
+ iew.layout;resolution:=optional;version="[3.1,4)",org.cytoscape.view.
+ model;resolution:=optional;version="[3.1,4)",org.cytoscape.view.model
+ .events;resolution:=optional;version="[3.1,4)",org.cytoscape.view.pre
+ sentation;resolution:=optional;version="[3.1,4)",org.cytoscape.view.p
+ resentation.property;resolution:=optional;version="[3.1,4)",org.cytos
+ cape.view.presentation.property.values;resolution:=optional;version="
+ [3.1,4)",org.cytoscape.view.vizmap;resolution:=optional;version="[3.1
+ ,4)",org.cytoscape.view.vizmap.mappings;resolution:=optional;version=
+ "[3.1,4)",org.cytoscape.work;resolution:=optional;version="[3.1,4)",o
+ rg.cytoscape.work.undo;resolution:=optional;version="[3.1,4)",org.fre
+ ehep.graphicsio.svg;resolution:=optional,org.osgi.framework;resolutio
+ n:=optional;version="[1.5,2)",org.xml.sax;resolution:=optional,org.xm
+ l.sax.helpers;resolution:=optional
+Bundle-SymbolicName: org.cytoscape.dyn
+Embed-Dependency: commons-math;groupId=org.apache.commons;inline=true
+
