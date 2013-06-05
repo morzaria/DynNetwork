@@ -69,7 +69,8 @@ import org.osgi.framework.BundleContext;
 import org.cytoscape.model.CyNetwork;
 import java.util.HashSet;
 import java.util.Set;
-import org.cytoscape.dyn.graphmetrics.degree;
+import org.cytoscape.dyn.internal.graphMetrics.compute;
+import org.cytoscape.work.TaskFactory;
 
 /**
  * <code> CyActivator </code> for DynNetwork plugin.
@@ -112,13 +113,7 @@ public class CyActivator<T,C> extends AbstractCyActivator
     	UndoSupport undo = getService(context,UndoSupport.class);
     	CyEventHelper cyEventHelperRef = getService(context,CyEventHelper.class);
     	
-    	/*my code
-    	Set<CyNetwork> networkSet=new HashSet<CyNetwork>();
-    	networkSet=cyNetworkManagerServiceRef.getNetworkSet();
-    	degree Degree=new degree(cytoscapeDesktopService,networkSet);
-    	registerService(context,Degree,CyAction.class,new Properties());
-    	code*/
-    	
+    	   	
     	
     	DynNetworkManagerImpl<T> dynNetManager = new DynNetworkManagerImpl<T>(
     			cyNetworkManagerServiceRef);
@@ -128,6 +123,7 @@ public class CyActivator<T,C> extends AbstractCyActivator
 				cyNetworkViewManagerServiceRef);
     	DynNetworkViewFactoryImpl<T> dynNetworkViewFactory = new DynNetworkViewFactoryImpl<T>(
     			dynNetViewManager, cyNetworkViewFactoryServiceRef, cyNetworkViewManagerServiceRef,visualMappingServiceRef);
+    	
     	
     	DynLayoutManager<T> dynLayoutManager = new DynLayoutManagerImpl<T>();
     	DynLayoutFactory<T> dynLayoutFactory = new DynLayoutFactoryImpl<T>(dynLayoutManager);
@@ -157,6 +153,14 @@ public class CyActivator<T,C> extends AbstractCyActivator
 //        Properties myLayoutProps2 = new Properties();
 //        myLayoutProps2.setProperty("preferredMenu","Dynamic VizMaps");
 
+        compute c=new compute(dynNetViewManager);
+        
+        Properties cprops = new Properties();
+        cprops.setProperty("preferredMenu","Apps");
+        cprops.setProperty("menuGravity","11.0");
+		cprops.setProperty("title","Sample 5");
+		registerService(context,c,TaskFactory.class,cprops);
+        
 		registerService(context,dynNetManager,DynNetworkManager.class, new Properties());
 		registerService(context,dynNetworkFactory,DynNetworkFactory.class, new Properties());
 		registerService(context,dynNetViewManager,DynNetworkViewManager.class, new Properties());
