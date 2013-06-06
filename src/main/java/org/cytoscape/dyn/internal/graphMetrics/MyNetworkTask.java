@@ -21,9 +21,14 @@ public class MyNetworkTask<T> extends AbstractTask{
 	public void run(TaskMonitor monitor){
 		Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
 		dyncollection=dynNetViewManager.getDynNetworkViews();
-		Iterator it=dyncollection.iterator();
-		DynNetworkSnapshotImpl<T> snap=new DynNetworkSnapshotImpl((DynNetworkView) it.next());
-		System.out.println(snap.getEdgeCount());
+		Iterator<DynNetworkView<T>> it=dyncollection.iterator();
+		DynNetworkView<T> view=it.next();
+		System.out.println(view.getVisibleNodes());
+		System.out.println(view.getVisibleEdges());
+		view.updateView();
+		
+		//DynNetworkSnapshotImpl<T> snap=new DynNetworkSnapshotImpl<T>((DynNetworkView<T>) it.next());
+		//System.out.println(snap.getEdgeCount());
 	}
 
 }
