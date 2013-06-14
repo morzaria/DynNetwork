@@ -69,7 +69,7 @@ import org.osgi.framework.BundleContext;
 import org.cytoscape.model.CyNetwork;
 import java.util.HashSet;
 import java.util.Set;
-import org.cytoscape.dyn.internal.graphMetrics.compute;
+import org.cytoscape.dyn.internal.graphMetrics.graphMetricsTasks;
 import org.cytoscape.work.TaskFactory;
 
 /**
@@ -153,7 +153,7 @@ public class CyActivator<T,C> extends AbstractCyActivator
 //        Properties myLayoutProps2 = new Properties();
 //        myLayoutProps2.setProperty("preferredMenu","Dynamic VizMaps");
 
-        compute c=new compute(dynNetViewManager);
+        graphMetricsTasks c=new graphMetricsTasks(dynNetViewManager);
         
         Properties cprops = new Properties();
         cprops.setProperty("preferredMenu","Apps");
