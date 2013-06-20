@@ -158,7 +158,7 @@ public class CyActivator<T,C> extends AbstractCyActivator
         Properties cprops = new Properties();
         cprops.setProperty("preferredMenu","Apps");
         cprops.setProperty("menuGravity","11.0");
-		cprops.setProperty("title","Sample 5");
+		cprops.setProperty("title","Dynamic Graph Metrics");
 		registerService(context,c,TaskFactory.class,cprops);
         
 		registerService(context,dynNetManager,DynNetworkManager.class, new Properties());

@@ -11,7 +11,7 @@ public class graphMetricsTasks<T> extends AbstractTaskFactory {
 		this.dynNetViewManager=dynNetViewManager;
 	}
 	public TaskIterator createTaskIterator(){
-		return new TaskIterator(new dynamicInDegree<T>(dynNetViewManager));
+		return new TaskIterator(new dynamicBetweennessStress<T>(dynNetViewManager), new dynamicInOutDegree<T>(dynNetViewManager), new dynamicDistEccCloseRad<T>(dynNetViewManager));
 	}
 
 }

@@ -155,10 +155,10 @@ public class DynNetworkSnapshotImpl<T> implements DynNetworkSnapshot<T>
 		ArrayList<CyNode> list = new ArrayList<CyNode>();
 		if (this.inEdges.containsKey(node))
 			for (CyEdge edge : this.inEdges.get(node))
-				list.add(edge.getTarget());
+				list.add(edge.getSource());
 		if (this.outEdges.containsKey(node))
 			for (CyEdge edge : this.outEdges.get(node))
-				list.add(edge.getSource());
+				list.add(edge.getTarget());
 		return list;
 	}
 	
