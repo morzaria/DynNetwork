@@ -23,10 +23,10 @@ import org.cytoscape.model.CyNode;
 public class dynamicInOutDegree<T> extends AbstractTask{
 	
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
-	HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeInDegreeMap;
-	HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeOutDegreeMap;
-	HashMap<CyNode,Integer> nodeInDegreeMap;
-	HashMap<CyNode,Integer> nodeOutDegreeMap;
+	private HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeInDegreeMap;
+	private HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeOutDegreeMap;
+	private HashMap<CyNode,Integer> nodeInDegreeMap;
+	private HashMap<CyNode,Integer> nodeOutDegreeMap;
 	
 	public dynamicInOutDegree(DynNetworkViewManagerImpl<T> dynNetViewManager){
 		this.dynNetViewManager=dynNetViewManager;
