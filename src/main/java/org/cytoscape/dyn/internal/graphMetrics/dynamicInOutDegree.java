@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
+import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.dyn.internal.model.DynNetwork;
@@ -20,26 +21,28 @@ import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 
-public class dynamicInOutDegree<T> extends AbstractTask{
+public class DynamicInOutDegree<T> extends AbstractTask{
 	
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
+	private CyNetworkView cyNetworkView;
 	private HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeInDegreeMap;
 	private HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeOutDegreeMap;
 	private HashMap<CyNode,Integer> nodeInDegreeMap;
 	private HashMap<CyNode,Integer> nodeOutDegreeMap;
 	
-	public dynamicInOutDegree(DynNetworkViewManagerImpl<T> dynNetViewManager){
+	public DynamicInOutDegree(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
 		this.dynNetViewManager=dynNetViewManager;
+		this.cyNetworkView=cyNetworkView;
 	}
 	
 	public void run(TaskMonitor monitor){
 		
 		//To get DynNetworkView which need to be passed to DynNetworkSnapshotImpl
-		Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
-		dyncollection=dynNetViewManager.getDynNetworkViews();
-		Iterator<DynNetworkView<T>> it=dyncollection.iterator();
+		//Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
+		//dyncollection=dynNetViewManager.getDynNetworkViews();
+		//Iterator<DynNetworkView<T>> it=dyncollection.iterator();
 		
-		DynNetworkView<T> view=it.next();
+		DynNetworkView<T> view=dynNetViewManager.getDynNetworkView(cyNetworkView);
 		DynNetworkSnapshotImpl<T> networkSnapshot=new DynNetworkSnapshotImpl<T>(view);
 		DynIntervalDouble snapshotInterval=new DynIntervalDouble(3.0,4.0);
 		networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);

@@ -65,14 +65,14 @@ public class DijkstraDistance<T>{
 			
 			Iterator<CyNode> nodeIterator=networkSnapshot.getNeighbors(node).iterator();
 			while(nodeIterator.hasNext()){
-				CyNode Node2=nodeIterator.next();
+				CyNode node2=nodeIterator.next();
 				//System.out.println(Node2+"   "+nodeDistanceMap.get(Node2));
-				if((nodeDistanceMap.get(node)+1.0)<=nodeDistanceMap.get(Node2)){
-					nodeDistanceMap.put(Node2,nodeDistanceMap.get(node)+1.0);
-					if(!nodePreviousMap.get(Node2).contains(node)){
-						nodePreviousMap.get(Node2).add(node);
+				if((nodeDistanceMap.get(node)+1.0)<=nodeDistanceMap.get(node2)){
+					nodeDistanceMap.put(node2,nodeDistanceMap.get(node)+1.0);
+					if(!nodePreviousMap.get(node2).contains(node)){
+						nodePreviousMap.get(node2).add(node);
 					}
-					nodeQueue.add(Node2);
+					nodeQueue.add(node2);
 				}
 			}
 		}

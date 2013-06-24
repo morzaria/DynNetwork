@@ -7,34 +7,33 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
 
 import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
+import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.dyn.internal.model.DynNetwork;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
 import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.dyn.internal.graphMetrics.DijkstraDistance;
 
-public class dynamicDistEccCloseRad<T> extends AbstractTask {
+public class DynamicDistEccCloseRad<T> extends AbstractTask {
 	
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
+	private CyNetworkView cyNetworkView;
 	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeEccentricityMap;
 	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeClosenessMap;
 	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeRadialityMap;
 	
 	private HashMap<DynInterval<T>,Double> distanceTimeMap;
 	
-	public dynamicDistEccCloseRad(DynNetworkViewManagerImpl<T> dynNetViewManager){
+	public DynamicDistEccCloseRad(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
 		this.dynNetViewManager=dynNetViewManager;
+		this.cyNetworkView=cyNetworkView;
 	}
 	
 	
@@ -42,11 +41,11 @@ public class dynamicDistEccCloseRad<T> extends AbstractTask {
 	public void run(TaskMonitor monitor){
 		
 		//To get DynNetworkView which need to be passed to DynNetworkSnapshotImpl
-		Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
-		dyncollection=dynNetViewManager.getDynNetworkViews();
-		Iterator<DynNetworkView<T>> it=dyncollection.iterator();
+		//Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
+		//dyncollection=dynNetViewManager.getDynNetworkViews();
+		//Iterator<DynNetworkView<T>> it=dyncollection.iterator();
 		
-		DynNetworkView<T> view=it.next();
+		DynNetworkView<T> view=dynNetViewManager.getDynNetworkView(cyNetworkView);
 		DynNetworkSnapshotImpl<T> networkSnapshot=new DynNetworkSnapshotImpl<T>(view);
 		
 		//Need the dynamic network to get event time list
@@ -99,9 +98,9 @@ public class dynamicDistEccCloseRad<T> extends AbstractTask {
 			Iterator<CyNode> nodeIterator=nodeList.iterator();
 			
 			//computing eccentricity, distance, closeness, radiality, betweenness for each node in a particular time interval
-			for(CyNode Node1 : nodeList){
+			for(CyNode node1 : nodeList){
 					
-				nodeDistanceMap=dijkstraDistance.getDijkstraDistanceMap(Node1);
+				nodeDistanceMap=dijkstraDistance.getDijkstraDistanceMap(node1);
 				
 				//finding the distance of the node farthest to the source node
 				nodeIterator=nodeList.iterator();
@@ -116,8 +115,8 @@ public class dynamicDistEccCloseRad<T> extends AbstractTask {
 						}	
 				}
 				
-				nodeClosenessMap.put(Node1, 1/closeness);
-				nodeEccentricityMap.put(Node1, 1/max);
+				nodeClosenessMap.put(node1, 1/closeness);
+				nodeEccentricityMap.put(node1, 1/max);
 				
 				//System.out.println(Node1.toString()+"  "+max);
 				
@@ -138,9 +137,9 @@ public class dynamicDistEccCloseRad<T> extends AbstractTask {
 			nodeTimeClosenessMap.put((DynInterval<T>) snapshotInterval, nodeClosenessMap);
 			
 			
-			for(CyNode Node1 : networkSnapshot.getNodes()){
+			for(CyNode node1 : networkSnapshot.getNodes()){
 				
-				nodeRadialityMap.put(Node1,((networkSnapshot.getNodeCount())*(dynamicGraphDistance+1)-(1/nodeClosenessMap.get(Node1)))/(networkSnapshot.getNodeCount()-1));
+				nodeRadialityMap.put(node1,((networkSnapshot.getNodeCount())*(dynamicGraphDistance+1)-(1/nodeClosenessMap.get(node1)))/(networkSnapshot.getNodeCount()-1));
 			}
 			
 			//Saving the radiality of each node in each time interval in a HashMap

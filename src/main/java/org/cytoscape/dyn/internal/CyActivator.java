@@ -56,6 +56,7 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.session.CyNetworkNaming;
+import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
 import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.model.CyNetworkViewFactory;
@@ -66,11 +67,7 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TunableSetter;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
-import org.cytoscape.model.CyNetwork;
-import java.util.HashSet;
-import java.util.Set;
-import org.cytoscape.dyn.internal.graphMetrics.graphMetricsTasks;
-import org.cytoscape.work.TaskFactory;
+import org.cytoscape.dyn.internal.graphMetrics.GraphMetricsTasks;
 
 /**
  * <code> CyActivator </code> for DynNetwork plugin.
@@ -153,13 +150,13 @@ public class CyActivator<T,C> extends AbstractCyActivator
 //        Properties myLayoutProps2 = new Properties();
 //        myLayoutProps2.setProperty("preferredMenu","Dynamic VizMaps");
 
-        graphMetricsTasks c=new graphMetricsTasks(dynNetViewManager);
+        GraphMetricsTasks<T> c=new GraphMetricsTasks<T>(dynNetViewManager,cyNetworkViewManagerServiceRef);
         
         Properties cprops = new Properties();
         cprops.setProperty("preferredMenu","Apps");
         cprops.setProperty("menuGravity","11.0");
 		cprops.setProperty("title","Dynamic Graph Metrics");
-		registerService(context,c,TaskFactory.class,cprops);
+		registerService(context,c,NetworkViewTaskFactory.class,cprops);
         
 		registerService(context,dynNetManager,DynNetworkManager.class, new Properties());
 		registerService(context,dynNetworkFactory,DynNetworkFactory.class, new Properties());
