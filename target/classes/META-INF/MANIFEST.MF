@@ -5,7 +5,7 @@ Bundle-Name: DynNetwork
 Created-By: Apache Maven Bundle Plugin
 Build-Jdk: 1.6.0_01
 Bundle-Version: 1.4.0.beta
-Bnd-LastModified: 1372092014541
+Bnd-LastModified: 1372093002477
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.cytoscape.dyn.internal.CyActivator
 Bundle-Description: Written By Sabina Sara Pfister, 2012
