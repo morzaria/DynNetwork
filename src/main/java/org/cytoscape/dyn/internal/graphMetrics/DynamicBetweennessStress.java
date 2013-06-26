@@ -11,7 +11,6 @@ package org.cytoscape.dyn.internal.graphMetrics;
  */
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,8 +32,8 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
 	private CyNetworkView cyNetworkView;
-	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeStressMap;
-	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeBetweennessMap;
+	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeStressMap;
+	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeBetweennessMap;
 
 	public DynamicBetweennessStress(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
 		this.dynNetViewManager=dynNetViewManager;
@@ -70,21 +69,23 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 		List<CyNode> nodeList=new ArrayList<CyNode>();
 
 
-		nodeTimeStressMap=new HashMap<DynInterval<T>,HashMap<CyNode,Double>>();
-		nodeTimeBetweennessMap=new HashMap<DynInterval<T>,HashMap<CyNode,Double>>();
-		HashMap<CyNode,Double> nodeBetweennessMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeStressMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeDependencyMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeDependencyMap1=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeDistanceMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeSigmaMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,List<CyNode>> nodePreviousMap=new HashMap<CyNode,List<CyNode>>();
+		nodeTimeStressMap=new HashMap<Double,HashMap<CyNode,Double>>();
+		nodeTimeBetweennessMap=new HashMap<Double,HashMap<CyNode,Double>>();
+		
 
 		/*Implementation of Brandes' Algorithm
 		 *
 		 * */
 		while(iterator.hasNext()){
 
+			HashMap<CyNode,Double> nodeBetweennessMap=new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeStressMap=new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeDependencyMap=new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeDependencyMap1=new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeDistanceMap=new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeSigmaMap=new HashMap<CyNode,Double>();
+			HashMap<CyNode,List<CyNode>> nodePreviousMap=new HashMap<CyNode,List<CyNode>>();
+			
 			snapshotInterval.setStart(startTime);
 			endTime=iterator.next();
 			snapshotInterval.setEnd(endTime);
@@ -142,15 +143,15 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 				}
 
 			}
-			nodeTimeStressMap.put((DynInterval<T>)snapshotInterval, nodeStressMap);
-			nodeTimeBetweennessMap.put((DynInterval<T>)snapshotInterval, nodeBetweennessMap);
-			System.out.println(nodeStressMap+"\n");
-			System.out.println(nodeBetweennessMap+"\n");
+			nodeTimeStressMap.put(snapshotInterval.getStart(), nodeStressMap);
+			nodeTimeBetweennessMap.put(snapshotInterval.getStart(), nodeBetweennessMap);
+			//System.out.println(nodeStressMap+"\n");
+			//System.out.println(nodeBetweennessMap+"\n");
 			startTime=endTime;
 
-			nodeDistanceMap.clear();
-			nodeBetweennessMap.clear();
+			
 		}
-
+		//System.out.println("Stress\n"+nodeTimeStressMap);
+		//System.out.println("Betweenness\n"+nodeTimeBetweennessMap);
 	}
 }

@@ -25,15 +25,15 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 	
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
 	private CyNetworkView cyNetworkView;
-	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeEccentricityMap;
-	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeClosenessMap;
-	private HashMap<DynInterval<T>,HashMap<CyNode,Double>> nodeTimeRadialityMap;
-	
-	private HashMap<DynInterval<T>,Double> distanceTimeMap;
+	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeEccentricityMap;
+	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeClosenessMap;
+	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeRadialityMap;
+	private HashMap<Double,HashMap<CyNode,Integer>> nodeTimeCentroidMap;
+	private HashMap<Double,Double> distanceTimeMap;
 	
 	public DynamicDistEccCloseRad(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
-		this.dynNetViewManager=dynNetViewManager;
-		this.cyNetworkView=cyNetworkView;
+		this.dynNetViewManager = dynNetViewManager;
+		this.cyNetworkView = cyNetworkView;
 	}
 	
 	
@@ -45,21 +45,21 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 		//dyncollection=dynNetViewManager.getDynNetworkViews();
 		//Iterator<DynNetworkView<T>> it=dyncollection.iterator();
 		
-		DynNetworkView<T> view=dynNetViewManager.getDynNetworkView(cyNetworkView);
-		DynNetworkSnapshotImpl<T> networkSnapshot=new DynNetworkSnapshotImpl<T>(view);
+		DynNetworkView<T> view = dynNetViewManager.getDynNetworkView(cyNetworkView);
+		DynNetworkSnapshotImpl<T> networkSnapshot = new DynNetworkSnapshotImpl<T>(view);
 		
 		//Need the dynamic network to get event time list
 		DynNetwork<T> dynamicnetwork=view.getNetwork();
 		
 		//Declaring and Initialising eventTimeList of the Dynamic Network
-		List<Double> eventTimeList=new ArrayList<Double>();
-		eventTimeList=dynamicnetwork.getEventTimeList();
-		Iterator<Double> iterator=eventTimeList.iterator();
+		List<Double> eventTimeList = new ArrayList<Double>();
+		eventTimeList = dynamicnetwork.getEventTimeList();
+		Iterator<Double> iterator = eventTimeList.iterator();
 		
 		//Declaring and Initialising two temporary variables for start time and end time
 		Double startTime, endTime;
-		startTime=iterator.next();
-		DynIntervalDouble snapshotInterval=new DynIntervalDouble(startTime,startTime);
+		startTime = iterator.next();
+		DynIntervalDouble snapshotInterval = new DynIntervalDouble(startTime,startTime);
 		networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);
 		
 		//Declaring a nodeList 
@@ -67,26 +67,30 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 		CyNode node;
 		
 		//HashMap for (TimeInterval, Node, Eccentricity)  and (TimeInterval, Distance)
-		nodeTimeEccentricityMap=new HashMap<DynInterval<T>,HashMap<CyNode,Double>>();
-		distanceTimeMap=new HashMap<DynInterval<T>,Double>();
+		nodeTimeEccentricityMap = new HashMap<Double,HashMap<CyNode,Double>>();
+		distanceTimeMap = new HashMap<Double,Double>();
 		
 		//HashMap for (TimeInterval, Node, Closeness)
-		nodeTimeClosenessMap=new HashMap<DynInterval<T>,HashMap<CyNode,Double>>();
+		nodeTimeClosenessMap = new HashMap<Double,HashMap<CyNode,Double>>();
 		
 		//HashMap for (TimeInterval, Node, Radiality)
-		nodeTimeRadialityMap=new HashMap<DynInterval<T>,HashMap<CyNode,Double>>();
+		nodeTimeRadialityMap = new HashMap<Double,HashMap<CyNode,Double>>();
 		
-		HashMap<CyNode,Double> nodeDistanceMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeEccentricityMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeClosenessMap=new HashMap<CyNode,Double>();
-		HashMap<CyNode,Double> nodeRadialityMap=new HashMap<CyNode,Double>();
-		
-		Double dynamicGraphDistance=0.0; 
+		//HashMap for (TimeInterval, Node, Centroid)
+		nodeTimeCentroidMap = new HashMap<Double,HashMap<CyNode,Integer>>();
 		
 		DijkstraDistance<T> dijkstraDistance;
 		
 		while(iterator.hasNext()){
 			//loop through all the time intervals
+			
+			Double dynamicGraphDistance=0.0;
+			HashMap<CyNode,Double> nodeDistanceMap = new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeEccentricityMap = new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeClosenessMap = new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeRadialityMap = new HashMap<CyNode,Double>();
+			HashMap<CyNode,Integer> nodeCentroidMap = new HashMap<CyNode,Integer>();
+			HashMap<CyNode,HashMap<CyNode,Double>> sourceNodeDistanceMap = new HashMap<CyNode,HashMap<CyNode,Double>>();
 			
 			snapshotInterval.setStart(startTime);
 			endTime=iterator.next();
@@ -94,24 +98,25 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 			
 			networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);
 			dijkstraDistance = new DijkstraDistance<T>(networkSnapshot);
-			nodeList=networkSnapshot.getNodes();
+			nodeList = networkSnapshot.getNodes();
 			Iterator<CyNode> nodeIterator=nodeList.iterator();
 			
 			//computing eccentricity, distance, closeness, radiality, betweenness for each node in a particular time interval
 			for(CyNode node1 : nodeList){
 					
-				nodeDistanceMap=dijkstraDistance.getDijkstraDistanceMap(node1);
+				nodeDistanceMap = dijkstraDistance.getDijkstraDistanceMap(node1);
+				sourceNodeDistanceMap.put(node1, nodeDistanceMap);
 				
 				//finding the distance of the node farthest to the source node
 				nodeIterator=nodeList.iterator();
-				Double max=0.0, closeness=0.0;
+				Double max = 0.0, closeness = 0.0;
 				while(nodeIterator.hasNext()){
 					
 					node=nodeIterator.next();
-					closeness+=nodeDistanceMap.get(node);
+					closeness+= nodeDistanceMap.get(node);
 					
 					if(nodeDistanceMap.get(node)>max){
-						max=nodeDistanceMap.get(node);
+						max = nodeDistanceMap.get(node);
 						}	
 				}
 				
@@ -128,35 +133,63 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 			//System.out.println(nodeClosenessMap);
 			
 			//Saving the graphDistance for different time intervals in a HashMap
-			distanceTimeMap.put((DynInterval<T>) snapshotInterval,dynamicGraphDistance);
+			distanceTimeMap.put(snapshotInterval.getStart(),dynamicGraphDistance);
 				
 			//Saving the eccentricity of each node in each time interval in a HashMap
-			nodeTimeEccentricityMap.put((DynInterval<T>) snapshotInterval,nodeEccentricityMap);
+			nodeTimeEccentricityMap.put(snapshotInterval.getStart(),nodeEccentricityMap);
 			
 			//Saving the closeness of each node in each time interval in a HashMap
-			nodeTimeClosenessMap.put((DynInterval<T>) snapshotInterval, nodeClosenessMap);
+			nodeTimeClosenessMap.put(snapshotInterval.getStart(), nodeClosenessMap);
 			
+			//System.out.println(dynamicGraphDistance);
 			
 			for(CyNode node1 : networkSnapshot.getNodes()){
 				
-				nodeRadialityMap.put(node1,((networkSnapshot.getNodeCount())*(dynamicGraphDistance+1)-(1/nodeClosenessMap.get(node1)))/(networkSnapshot.getNodeCount()-1));
+				nodeRadialityMap.put(node1,((networkSnapshot.getNodeCount()-1)*(dynamicGraphDistance+1)-(1/nodeClosenessMap.get(node1)))/(networkSnapshot.getNodeCount()-1));
+				nodeCentroidMap.put(node1, 0);
 			}
 			
 			//Saving the radiality of each node in each time interval in a HashMap
-			nodeTimeRadialityMap.put((DynInterval<T>) snapshotInterval, nodeRadialityMap);
+			nodeTimeRadialityMap.put(snapshotInterval.getStart(), nodeRadialityMap);
 			
-			System.out.println(nodeTimeEccentricityMap+"\n");
-			System.out.println(nodeTimeClosenessMap+"\n");
-			System.out.println(nodeTimeRadialityMap+"\n");
+			int countNode1 = 0, countNode2 = 0; 
 			
+			for(CyNode node1 : networkSnapshot.getNodes()){
+				
+				for(CyNode node2 : networkSnapshot.getNodes()){
+					
+					for(CyNode node3 : networkSnapshot.getNodes()){
+						
+						if(node1!=node3 && node2!=node3 && node1!=node2){
+							
+							if(sourceNodeDistanceMap.get(node1).get(node3)<sourceNodeDistanceMap.get(node2).get(node3)){
+								countNode1++;
+							}
+							else if(sourceNodeDistanceMap.get(node1).get(node3)>sourceNodeDistanceMap.get(node2).get(node3)){
+								countNode2++;
+							}
+						}
+					}
+					
+					if((countNode1-countNode2)<nodeCentroidMap.get(node1)){
+						nodeCentroidMap.put(node1, (countNode1-countNode2));
+					}
+					countNode1 = 0;
+					countNode2 = 0;
+				}
+				
+			}
+			
+			nodeTimeCentroidMap.put(snapshotInterval.getStart(),nodeCentroidMap);
 			
 			//Setting Graph distance to 0 for the next iteration of time
-			dynamicGraphDistance=0.0;
-			
-			startTime=endTime;
-			nodeClosenessMap.clear();
-			nodeDistanceMap.clear();
-		}	
+			dynamicGraphDistance = 0.0;
+			startTime = endTime;
+		}
+		System.out.println("Eccentricity\n"+nodeTimeEccentricityMap+"\n");
+		System.out.println("Closeness\n"+nodeTimeClosenessMap+"\n");
+		System.out.println("Radiality\n"+nodeTimeRadialityMap+"\n");
+		System.out.println("Centroid\n"+nodeTimeCentroidMap);
 		
 	}
 

@@ -4,7 +4,6 @@
 package org.cytoscape.dyn.internal.graphMetrics;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +17,6 @@ import org.cytoscape.dyn.internal.model.DynNetwork;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
 import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 
 public class DynamicInOutDegree<T> extends AbstractTask{
@@ -31,8 +29,8 @@ public class DynamicInOutDegree<T> extends AbstractTask{
 	private HashMap<CyNode,Integer> nodeOutDegreeMap;
 	
 	public DynamicInOutDegree(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
-		this.dynNetViewManager=dynNetViewManager;
-		this.cyNetworkView=cyNetworkView;
+		this.dynNetViewManager = dynNetViewManager;
+		this.cyNetworkView = cyNetworkView;
 	}
 	
 	public void run(TaskMonitor monitor){
@@ -42,9 +40,9 @@ public class DynamicInOutDegree<T> extends AbstractTask{
 		//dyncollection=dynNetViewManager.getDynNetworkViews();
 		//Iterator<DynNetworkView<T>> it=dyncollection.iterator();
 		
-		DynNetworkView<T> view=dynNetViewManager.getDynNetworkView(cyNetworkView);
-		DynNetworkSnapshotImpl<T> networkSnapshot=new DynNetworkSnapshotImpl<T>(view);
-		DynIntervalDouble snapshotInterval=new DynIntervalDouble(3.0,4.0);
+		DynNetworkView<T> view = dynNetViewManager.getDynNetworkView(cyNetworkView);
+		DynNetworkSnapshotImpl<T> networkSnapshot = new DynNetworkSnapshotImpl<T>(view);
+		DynIntervalDouble snapshotInterval = new DynIntervalDouble(3.0,4.0);
 		networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);
 		
 				
@@ -52,47 +50,47 @@ public class DynamicInOutDegree<T> extends AbstractTask{
 		
 		//Declaring and Initialising eventTimeList of the Dynamic Network
 		
-		List<Double> eventTimeList=new ArrayList<Double>();
-		eventTimeList=dynamicnetwork.getEventTimeList();
+		List<Double> eventTimeList = new ArrayList<Double>();
+		eventTimeList = dynamicnetwork.getEventTimeList();
 		
 		Iterator<Double> iterator=eventTimeList.iterator();
 		
 		//Declaring and Initialising two temporary variables for start time and end time
 		
 		Double startTime, endTime;
-		startTime=iterator.next();
+		startTime = iterator.next();
 		
 		
 		//Declaring a nodeList 
 		
-		List<CyNode> nodeList=new ArrayList<CyNode>();
+		List<CyNode> nodeList = new ArrayList<CyNode>();
 		CyNode node;
 		
-		nodeTimeInDegreeMap=new HashMap<DynInterval<T>,HashMap<CyNode,Integer>>();
-		nodeTimeOutDegreeMap=new HashMap<DynInterval<T>,HashMap<CyNode,Integer>>();
-		nodeInDegreeMap=new HashMap<CyNode,Integer>();		
-		nodeOutDegreeMap=new HashMap<CyNode,Integer>();
+		nodeTimeInDegreeMap = new HashMap<DynInterval<T>,HashMap<CyNode,Integer>>();
+		nodeTimeOutDegreeMap = new HashMap<DynInterval<T>,HashMap<CyNode,Integer>>();
+		nodeInDegreeMap = new HashMap<CyNode,Integer>();		
+		nodeOutDegreeMap = new HashMap<CyNode,Integer>();
 		//Computing the indegree for each node for each time interval
 		
 		while(iterator.hasNext()){
 			
 			snapshotInterval.setStart(startTime);
-			endTime=iterator.next();
+			endTime = iterator.next();
 			snapshotInterval.setEnd(endTime);
 			
 			networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);
-			nodeList=networkSnapshot.getNodes();
+			nodeList = networkSnapshot.getNodes();
 			Iterator<CyNode> nodeIterator=nodeList.iterator();
 			//System.out.println("For Time Interval "+snapshotInterval.getStart()+"-"+snapshotInterval.getEnd()+":");
 			while(nodeIterator.hasNext()){
-				node=nodeIterator.next();
+				node = nodeIterator.next();
 				nodeInDegreeMap.put(node,networkSnapshot.inDegree(node));
 				nodeOutDegreeMap.put(node, networkSnapshot.outDegree(node));
 				//System.out.println("In Degree of Node "+node.getSUID()+" is "+networkSnapshot.inDegree(node));
 			} 
 			nodeTimeInDegreeMap.put((DynInterval<T>) snapshotInterval,nodeInDegreeMap); 	
 			nodeTimeOutDegreeMap.put((DynInterval<T>) snapshotInterval, nodeOutDegreeMap);
-			startTime=endTime;
+			startTime = endTime;
 			
 		}
 	}
