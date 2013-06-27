@@ -150,7 +150,7 @@ public class CyActivator<T,C> extends AbstractCyActivator
 //        Properties myLayoutProps2 = new Properties();
 //        myLayoutProps2.setProperty("preferredMenu","Dynamic VizMaps");
 
-        GraphMetricsTasks<T> c=new GraphMetricsTasks<T>(dynNetViewManager,cyNetworkViewManagerServiceRef);
+        GraphMetricsTasks<T> c=new GraphMetricsTasks<T>(dynNetViewManager,cyNetworkViewManagerServiceRef, cyNetworkFactoryServiceRef, cyRootNetworkManagerServiceRef, cyNetworkNamingServiceRef, dynNetManager );
         
         Properties cprops = new Properties();
         cprops.setProperty("preferredMenu","Apps");

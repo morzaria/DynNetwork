@@ -20,28 +20,47 @@ import java.util.Stack;
 
 import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
+import org.cytoscape.session.CyNetworkNaming;
 import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.dyn.internal.model.DynNetwork;
+import org.cytoscape.dyn.internal.model.DynNetworkFactoryImpl;
+import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
 import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
+import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+
 public class DynamicBetweennessStress<T> extends AbstractTask{
 
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
 	private CyNetworkView cyNetworkView;
+	private CyNetworkFactory networkFactory;
+	private CyRootNetworkManager rootNetworkManager;
+	private CyNetworkNaming nameUtil;
+	private DynNetworkManagerImpl<T> dynNetManager;
 	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeStressMap;
 	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeBetweennessMap;
 
-	public DynamicBetweennessStress(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
-		this.dynNetViewManager=dynNetViewManager;
-		this.cyNetworkView=cyNetworkView;
+	public DynamicBetweennessStress(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView, CyNetworkFactory cyNetworkFactoryServiceRef, CyRootNetworkManager cyRootNetworkManagerServiceRef, CyNetworkNaming cyNetworkNamingServiceRef, DynNetworkManagerImpl<T> dynNetManager){
+		this.dynNetViewManager = dynNetViewManager;
+		this.cyNetworkView = cyNetworkView;
+		this.networkFactory = cyNetworkFactoryServiceRef;
+		this.rootNetworkManager = cyRootNetworkManagerServiceRef;
+		this.nameUtil = cyNetworkNamingServiceRef;
+		this.dynNetManager = dynNetManager;
 	}
+	
+	@SuppressWarnings("unchecked")
 	public void run(TaskMonitor monitor){
 
 		monitor.setTitle("Calculating Betweenness and Stress");
+		
+		DynNetworkFactoryImpl<T> dynNetFactory = new DynNetworkFactoryImpl<T>(networkFactory, rootNetworkManager, dynNetManager, nameUtil);
 
 		//To get DynNetworkView which need to be passed to DynNetworkSnapshotImpl
 		//Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
@@ -72,7 +91,6 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 		nodeTimeStressMap=new HashMap<Double,HashMap<CyNode,Double>>();
 		nodeTimeBetweennessMap=new HashMap<Double,HashMap<CyNode,Double>>();
 		
-
 		/*Implementation of Brandes' Algorithm
 		 *
 		 * */
@@ -139,16 +157,17 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 					if(node3!=node1){
 						nodeBetweennessMap.put(node3, nodeBetweennessMap.get(node3)+nodeDependencyMap.get(node3));
 						nodeStressMap.put(node3, nodeStressMap.get(node3)+nodeDependencyMap1.get(node3));
+						dynNetFactory.addedNodeAttribute(dynamicnetwork, node3, "Betweenness", Double.toString(nodeBetweennessMap.get(node3)) , "real", startTime.toString(), endTime.toString());
+						dynNetFactory.addedNodeAttribute(dynamicnetwork, node3, "Stress", Double.toString(nodeStressMap.get(node3)) , "real", startTime.toString(), endTime.toString());
 					}
 				}
 
 			}
 			nodeTimeStressMap.put(snapshotInterval.getStart(), nodeStressMap);
 			nodeTimeBetweennessMap.put(snapshotInterval.getStart(), nodeBetweennessMap);
-			//System.out.println(nodeStressMap+"\n");
-			//System.out.println(nodeBetweennessMap+"\n");
+			System.out.println(nodeStressMap+"\n");
+			System.out.println(nodeBetweennessMap+"\n");
 			startTime=endTime;
-
 			
 		}
 		//System.out.println("Stress\n"+nodeTimeStressMap);
