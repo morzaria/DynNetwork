@@ -22,7 +22,6 @@ import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
 import org.cytoscape.session.CyNetworkNaming;
 import org.cytoscape.view.model.CyNetworkView;
-import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.dyn.internal.model.DynNetwork;
@@ -46,6 +45,14 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeStressMap;
 	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeBetweennessMap;
 
+	/**
+	 * @param dynNetViewManager
+	 * @param cyNetworkView
+	 * @param cyNetworkFactoryServiceRef
+	 * @param cyRootNetworkManagerServiceRef
+	 * @param cyNetworkNamingServiceRef
+	 * @param dynNetManager
+	 */
 	public DynamicBetweennessStress(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView, CyNetworkFactory cyNetworkFactoryServiceRef, CyRootNetworkManager cyRootNetworkManagerServiceRef, CyNetworkNaming cyNetworkNamingServiceRef, DynNetworkManagerImpl<T> dynNetManager){
 		this.dynNetViewManager = dynNetViewManager;
 		this.cyNetworkView = cyNetworkView;
@@ -87,7 +94,6 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 		networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);
 		List<CyNode> nodeList=new ArrayList<CyNode>();
 
-
 		nodeTimeStressMap=new HashMap<Double,HashMap<CyNode,Double>>();
 		nodeTimeBetweennessMap=new HashMap<Double,HashMap<CyNode,Double>>();
 		
@@ -100,7 +106,7 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 			HashMap<CyNode,Double> nodeStressMap=new HashMap<CyNode,Double>();
 			HashMap<CyNode,Double> nodeDependencyMap=new HashMap<CyNode,Double>();
 			HashMap<CyNode,Double> nodeDependencyMap1=new HashMap<CyNode,Double>();
-			HashMap<CyNode,Double> nodeDistanceMap=new HashMap<CyNode,Double>();
+			HashMap<CyNode,Double> nodeDistanceMap1=new HashMap<CyNode,Double>();
 			HashMap<CyNode,Double> nodeSigmaMap=new HashMap<CyNode,Double>();
 			HashMap<CyNode,List<CyNode>> nodePreviousMap=new HashMap<CyNode,List<CyNode>>();
 			
@@ -120,14 +126,14 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 				for(CyNode node2 : nodeList){
 					nodeDependencyMap.put(node2, 0.0);
 					nodeDependencyMap1.put(node2, 0.0);
-					nodeDistanceMap.put(node2,-1.0);
+					nodeDistanceMap1.put(node2,-1.0);
 					nodeSigmaMap.put(node2,0.0);
 					nodePreviousMap.put(node2, new ArrayList<CyNode>());
 				}
 				Stack<CyNode> nodeStack = new Stack<CyNode>();
 				Queue<CyNode> nodeQueue = new LinkedList<CyNode>();
 				nodeQueue.add(node1);
-				nodeDistanceMap.put(node1, 0.0);
+				nodeDistanceMap1.put(node1, 0.0);
 				nodeSigmaMap.put(node1, 1.0);
 				while(!nodeQueue.isEmpty()){
 					CyNode node2 = nodeQueue.remove();
@@ -135,12 +141,12 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 
 					for(CyNode node3 : networkSnapshot.getNeighbors(node2)){
 
-						if(nodeDistanceMap.get(node3)<0){
+						if(nodeDistanceMap1.get(node3)<0){
 							nodeQueue.add(node3);
-							nodeDistanceMap.put(node3, nodeDistanceMap.get(node2)+1.0);
+							nodeDistanceMap1.put(node3, nodeDistanceMap1.get(node2)+1.0);
 						}
 
-						if(nodeDistanceMap.get(node3)==(nodeDistanceMap.get(node2)+1.0)){
+						if(nodeDistanceMap1.get(node3)==(nodeDistanceMap1.get(node2)+1.0)){
 							nodeSigmaMap.put(node3, nodeSigmaMap.get(node3)+nodeSigmaMap.get(node2));
 							nodePreviousMap.get(node3).add(node2);
 						}
@@ -156,20 +162,19 @@ public class DynamicBetweennessStress<T> extends AbstractTask{
 					}
 					if(node3!=node1){
 						nodeBetweennessMap.put(node3, nodeBetweennessMap.get(node3)+nodeDependencyMap.get(node3));
-						nodeStressMap.put(node3, nodeStressMap.get(node3)+nodeDependencyMap1.get(node3));
-						dynNetFactory.addedNodeAttribute(dynamicnetwork, node3, "Betweenness", Double.toString(nodeBetweennessMap.get(node3)) , "real", startTime.toString(), endTime.toString());
-						dynNetFactory.addedNodeAttribute(dynamicnetwork, node3, "Stress", Double.toString(nodeStressMap.get(node3)) , "real", startTime.toString(), endTime.toString());
+						nodeStressMap.put(node3, nodeStressMap.get(node3)+nodeDependencyMap1.get(node3));	
 					}
-				}
-
+				}		
 			}
 			nodeTimeStressMap.put(snapshotInterval.getStart(), nodeStressMap);
 			nodeTimeBetweennessMap.put(snapshotInterval.getStart(), nodeBetweennessMap);
-			System.out.println(nodeStressMap+"\n");
-			System.out.println(nodeBetweennessMap+"\n");
+			for(CyNode node : nodeList){
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node, "Betweenness", Double.toString(nodeTimeBetweennessMap.get(snapshotInterval.getStart()).get(node)) , "real", startTime.toString(), endTime.toString());
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node, "Stress", Double.toString(nodeTimeStressMap.get(snapshotInterval.getStart()).get(node)) , "real", startTime.toString(), endTime.toString());
+			}	
 			startTime=endTime;
-			
 		}
+		
 		//System.out.println("Stress\n"+nodeTimeStressMap);
 		//System.out.println("Betweenness\n"+nodeTimeBetweennessMap);
 	}

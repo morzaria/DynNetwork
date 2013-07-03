@@ -10,31 +10,58 @@ import java.util.List;
 
 import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
+import org.cytoscape.session.CyNetworkNaming;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.dyn.internal.model.DynNetwork;
+import org.cytoscape.dyn.internal.model.DynNetworkFactory;
+import org.cytoscape.dyn.internal.model.DynNetworkFactoryImpl;
+import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
 import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
+import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
 public class DynamicInOutDegree<T> extends AbstractTask{
 	
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
 	private CyNetworkView cyNetworkView;
-	private HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeInDegreeMap;
-	private HashMap<DynInterval<T>,HashMap<CyNode,Integer>> nodeTimeOutDegreeMap;
+	private CyNetworkFactory networkFactory;
+	private CyRootNetworkManager rootNetworkManager;
+	private CyNetworkNaming nameUtil;
+	private DynNetworkManagerImpl<T> dynNetManager;
+	private HashMap<Double,HashMap<CyNode,Integer>> nodeTimeInDegreeMap;
+	private HashMap<Double,HashMap<CyNode,Integer>> nodeTimeOutDegreeMap;
 	private HashMap<CyNode,Integer> nodeInDegreeMap;
 	private HashMap<CyNode,Integer> nodeOutDegreeMap;
 	
-	public DynamicInOutDegree(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
+	/**
+	 * @param dynNetViewManager
+	 * @param cyNetworkView
+	 * @param networkFactory
+	 * @param rootNetworkManager
+	 * @param nameUtil
+	 * @param dynNetManager
+	 */
+	public DynamicInOutDegree(DynNetworkViewManagerImpl<T> dynNetViewManager,
+			CyNetworkView cyNetworkView, CyNetworkFactory networkFactory,
+			CyRootNetworkManager rootNetworkManager, CyNetworkNaming nameUtil,
+			DynNetworkManagerImpl<T> dynNetManager){
 		this.dynNetViewManager = dynNetViewManager;
 		this.cyNetworkView = cyNetworkView;
+		this.networkFactory = networkFactory;
+		this.rootNetworkManager = rootNetworkManager;
+		this.nameUtil = nameUtil;
+		this.dynNetManager = dynNetManager;
+		
 	}
 	
 	public void run(TaskMonitor monitor){
 		
+		DynNetworkFactory<T> dynNetFactory = new DynNetworkFactoryImpl<T>(networkFactory, rootNetworkManager, dynNetManager, nameUtil);
 		//To get DynNetworkView which need to be passed to DynNetworkSnapshotImpl
 		//Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
 		//dyncollection=dynNetViewManager.getDynNetworkViews();
@@ -66,8 +93,8 @@ public class DynamicInOutDegree<T> extends AbstractTask{
 		List<CyNode> nodeList = new ArrayList<CyNode>();
 		CyNode node;
 		
-		nodeTimeInDegreeMap = new HashMap<DynInterval<T>,HashMap<CyNode,Integer>>();
-		nodeTimeOutDegreeMap = new HashMap<DynInterval<T>,HashMap<CyNode,Integer>>();
+		nodeTimeInDegreeMap = new HashMap<Double,HashMap<CyNode,Integer>>();
+		nodeTimeOutDegreeMap = new HashMap<Double,HashMap<CyNode,Integer>>();
 		nodeInDegreeMap = new HashMap<CyNode,Integer>();		
 		nodeOutDegreeMap = new HashMap<CyNode,Integer>();
 		//Computing the indegree for each node for each time interval
@@ -88,11 +115,17 @@ public class DynamicInOutDegree<T> extends AbstractTask{
 				nodeOutDegreeMap.put(node, networkSnapshot.outDegree(node));
 				//System.out.println("In Degree of Node "+node.getSUID()+" is "+networkSnapshot.inDegree(node));
 			} 
-			nodeTimeInDegreeMap.put((DynInterval<T>) snapshotInterval,nodeInDegreeMap); 	
-			nodeTimeOutDegreeMap.put((DynInterval<T>) snapshotInterval, nodeOutDegreeMap);
+			nodeTimeInDegreeMap.put(snapshotInterval.getStart(),nodeInDegreeMap); 	
+			nodeTimeOutDegreeMap.put(snapshotInterval.getStart(), nodeOutDegreeMap);
+			
+			for(CyNode node1 : nodeList){
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node1, "InDegree", Double.toString(nodeTimeInDegreeMap.get(snapshotInterval.getStart()).get(node1)) , "real", startTime.toString(), endTime.toString());
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node1, "OutDegree", Double.toString(nodeTimeOutDegreeMap.get(snapshotInterval.getStart()).get(node1)) , "real", startTime.toString(), endTime.toString());
+			}	
 			startTime = endTime;
 			
 		}
+		dynamicnetwork.finalizeNetwork();
 	}
 
 }

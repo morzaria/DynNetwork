@@ -123,7 +123,7 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 		setMinMaxTime(interval);
 		setNodeDynAttribute(network, this.nodeTable, node.getSUID(), column, interval);
 	}
-
+	
 	@Override
 	public synchronized void insertEdge(CyEdge edge, String column, DynInterval<T> interval)
 	{

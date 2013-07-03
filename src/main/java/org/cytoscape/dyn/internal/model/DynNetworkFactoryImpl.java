@@ -161,7 +161,7 @@ public final class DynNetworkFactoryImpl<T> extends AbstractIntervalCheck<T> imp
 		addRow(dynNetwork.getNetwork(), dynNetwork.getNetwork().getDefaultNodeTable(), node, attName, attr);
 		dynNetwork.insertNode(node, attName, interval);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private void setAttributes(DynNetwork<T> dynNetwork, CyEdge edge, String attName, String attValue, String attType, String start, String end)
 	{

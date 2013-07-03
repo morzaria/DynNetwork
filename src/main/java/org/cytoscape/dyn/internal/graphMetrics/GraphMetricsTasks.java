@@ -18,6 +18,14 @@ public class GraphMetricsTasks<T> extends AbstractNetworkViewTaskFactory {
 	private CyNetworkNaming nameUtil;
 	private DynNetworkManagerImpl dynNetworkManager;
 	
+	/**
+	 * @param dynNetViewManager
+	 * @param cyNetworkViewManagerServiceRef
+	 * @param cyNetworkFactoryServiceRef
+	 * @param cyRootNetworkManagerServiceRef
+	 * @param cyNetworkNamingServiceRef
+	 * @param dynNetManager
+	 */
 	public GraphMetricsTasks(DynNetworkViewManagerImpl<T> dynNetViewManager,CyNetworkViewManager cyNetworkViewManagerServiceRef, CyNetworkFactory cyNetworkFactoryServiceRef, CyRootNetworkManager cyRootNetworkManagerServiceRef, CyNetworkNaming cyNetworkNamingServiceRef, DynNetworkManagerImpl<T> dynNetManager){
 		this.dynNetViewManager = dynNetViewManager;
 		this.networkFactory = cyNetworkFactoryServiceRef;
@@ -25,13 +33,15 @@ public class GraphMetricsTasks<T> extends AbstractNetworkViewTaskFactory {
 		this.nameUtil = cyNetworkNamingServiceRef;
 		this. dynNetworkManager = dynNetManager;
 	}
-	//public TaskIterator createTaskIterator(){
-	//	return new TaskIterator(new DynamicBetweennessStress<T>(dynNetViewManager), new DynamicInOutDegree<T>(dynNetViewManager), new DynamicDistEccCloseRad<T>(dynNetViewManager));
-	//}
+	
+	/* (non-Javadoc)
+	 * @see org.cytoscape.task.NetworkViewTaskFactory#createTaskIterator(org.cytoscape.view.model.CyNetworkView)
+	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public TaskIterator createTaskIterator(CyNetworkView arg0) {
 		// TODO Auto-generated method stub
-		return new TaskIterator(new DynamicBetweennessStress<T>(dynNetViewManager, arg0, networkFactory, rootNetworkManager, nameUtil, dynNetworkManager), new DynamicInOutDegree<T>(dynNetViewManager, arg0), new DynamicDistEccCloseRad<T>(dynNetViewManager, arg0));
+		return new TaskIterator(/*new DynamicDirectedBetweennessStress<T>(dynNetViewManager, arg0, networkFactory, rootNetworkManager, nameUtil, dynNetworkManager),new DynamicDirectedEccCloseRadCentro<T>(dynNetViewManager, arg0, networkFactory, rootNetworkManager, nameUtil, dynNetworkManager)*/new EigenVector<T>(dynNetViewManager, arg0, networkFactory, rootNetworkManager, nameUtil, dynNetworkManager),new DynamicDistEccCloseRad<T>(dynNetViewManager, arg0, networkFactory, rootNetworkManager, nameUtil, dynNetworkManager), new DynamicBetweennessStress<T>(dynNetViewManager, arg0, networkFactory, rootNetworkManager, nameUtil, dynNetworkManager), new DynamicInOutDegree<T>(dynNetViewManager, arg0, networkFactory, rootNetworkManager, nameUtil, dynNetworkManager));
 	}
 
 }

@@ -11,35 +11,63 @@ import java.util.List;
 
 import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
+import org.cytoscape.session.CyNetworkNaming;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.dyn.internal.model.DynNetwork;
+import org.cytoscape.dyn.internal.model.DynNetworkFactory;
+import org.cytoscape.dyn.internal.model.DynNetworkFactoryImpl;
+import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
 import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
+import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.dyn.internal.graphMetrics.DijkstraDistance;
 
 public class DynamicDistEccCloseRad<T> extends AbstractTask {
 	
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
 	private CyNetworkView cyNetworkView;
+	private CyNetworkFactory networkFactory;
+	private CyRootNetworkManager rootNetworkManager;
+	private CyNetworkNaming nameUtil;
+	private DynNetworkManagerImpl<T> dynNetManager;
 	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeEccentricityMap;
 	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeClosenessMap;
 	private HashMap<Double,HashMap<CyNode,Double>> nodeTimeRadialityMap;
 	private HashMap<Double,HashMap<CyNode,Integer>> nodeTimeCentroidMap;
 	private HashMap<Double,Double> distanceTimeMap;
 	
-	public DynamicDistEccCloseRad(DynNetworkViewManagerImpl<T> dynNetViewManager, CyNetworkView cyNetworkView){
+	/**
+	 * @param dynNetViewManager
+	 * @param cyNetworkView
+	 * @param networkFactory
+	 * @param rootNetworkManager
+	 * @param nameUtil
+	 * @param dynNetManager
+	 */
+	public DynamicDistEccCloseRad(
+			DynNetworkViewManagerImpl<T> dynNetViewManager,
+			CyNetworkView cyNetworkView, CyNetworkFactory networkFactory,
+			CyRootNetworkManager rootNetworkManager, CyNetworkNaming nameUtil,
+			DynNetworkManagerImpl<T> dynNetManager) {
 		this.dynNetViewManager = dynNetViewManager;
 		this.cyNetworkView = cyNetworkView;
+		this.networkFactory = networkFactory;
+		this.rootNetworkManager = rootNetworkManager;
+		this.nameUtil = nameUtil;
+		this.dynNetManager = dynNetManager;
 	}
-	
 	
 	@SuppressWarnings("unchecked")
 	public void run(TaskMonitor monitor){
 		
+		monitor.setTitle("Calculating Centrality parameters");
+		
+		DynNetworkFactory<T> dynNetFactory = new DynNetworkFactoryImpl<T>(networkFactory, rootNetworkManager, dynNetManager, nameUtil);
 		//To get DynNetworkView which need to be passed to DynNetworkSnapshotImpl
 		//Collection<DynNetworkView<T>> dyncollection=new ArrayList<DynNetworkView<T>>();
 		//dyncollection=dynNetViewManager.getDynNetworkViews();
@@ -184,12 +212,19 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 			
 			//Setting Graph distance to 0 for the next iteration of time
 			dynamicGraphDistance = 0.0;
+			for(CyNode node1 : nodeList){
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node1, "Centroid", Double.toString(nodeTimeCentroidMap.get(snapshotInterval.getStart()).get(node1)) , "real", startTime.toString(), endTime.toString());
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node1, "Eccentricity", Double.toString(nodeTimeEccentricityMap.get(snapshotInterval.getStart()).get(node1)) , "real", startTime.toString(), endTime.toString());
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node1, "Closeness", Double.toString(nodeTimeClosenessMap.get(snapshotInterval.getStart()).get(node1)) , "real", startTime.toString(), endTime.toString());
+				dynNetFactory.addedNodeAttribute(dynamicnetwork, node1, "Radiality", Double.toString(nodeTimeRadialityMap.get(snapshotInterval.getStart()).get(node1)) , "real", startTime.toString(), endTime.toString());
+			}
 			startTime = endTime;
 		}
-		System.out.println("Eccentricity\n"+nodeTimeEccentricityMap+"\n");
-		System.out.println("Closeness\n"+nodeTimeClosenessMap+"\n");
-		System.out.println("Radiality\n"+nodeTimeRadialityMap+"\n");
-		System.out.println("Centroid\n"+nodeTimeCentroidMap);
+		//dynamicnetwork.finalizeNetwork();
+		//System.out.println("Eccentricity\n"+nodeTimeEccentricityMap+"\n");
+		//System.out.println("Closeness\n"+nodeTimeClosenessMap+"\n");
+		//System.out.println("Radiality\n"+nodeTimeRadialityMap+"\n");
+		//System.out.println("Centroid\n"+nodeTimeCentroidMap);
 		
 	}
 

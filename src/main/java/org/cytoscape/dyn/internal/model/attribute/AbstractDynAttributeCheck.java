@@ -61,6 +61,8 @@ public abstract class AbstractDynAttributeCheck<T>
 			map.put(key, getAttr(interval,key));
 	}
 	
+	
+	
 	protected void setEdgeDynAttribute(CyNetwork network, Map<KeyPairs,DynAttribute<T>> map, long id, String column, DynInterval<T> interval)
 	{
 		KeyPairs key = new KeyPairs(column, id);

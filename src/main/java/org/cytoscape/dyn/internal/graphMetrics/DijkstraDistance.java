@@ -5,6 +5,7 @@
 package org.cytoscape.dyn.internal.graphMetrics;
 
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
+import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import java.util.Stack;
  */
 public class DijkstraDistance<T>{
 	
-	private CyNode node;
 	private DynNetworkSnapshotImpl<T> networkSnapshot;
 	
 	//HashMap of (node, distance from the source node)
@@ -32,18 +32,19 @@ public class DijkstraDistance<T>{
 	// HashMap of (node, previous nodes in the path)
 	private HashMap<CyNode,List<CyNode>> nodePreviousMap;
 	
-	
 	//private List<CyNode> nodeList;
 	
 	public DijkstraDistance(DynNetworkSnapshotImpl<T> networkSnapshot){
-		this.networkSnapshot=networkSnapshot;
+		this.networkSnapshot = networkSnapshot;
 	}
 	
 	public HashMap<CyNode,Double> getDijkstraDistanceMap(CyNode source){
 		
-		Queue<CyNode> nodeQueue = new LinkedList<CyNode>();
-		nodeQueue.add(source);
+		PriorityQueue<Long> nodeQueue = new PriorityQueue<Long>();
+		nodeQueue.add(source.getSUID());
 		
+		//HashMap of (nodeSUID, node)
+		HashMap<Long, CyNode> suidNodeMap = new HashMap<Long, CyNode>();
 				
 		//HashMap of (node, distance from the source node)
 		nodeDistanceMap = new HashMap<CyNode,Double>();
@@ -51,31 +52,70 @@ public class DijkstraDistance<T>{
 		// HashMap of (node, previous nodes in the path) 
 		nodePreviousMap = new HashMap<CyNode,List<CyNode>>();
 		
-		
-		//List<CyNode> predecessorNodes = new ArrayList<CyNode>();
 		for(CyNode node : networkSnapshot.getNodes()){
 			nodeDistanceMap.put(node, Double.POSITIVE_INFINITY);
 			nodePreviousMap.put(node,new ArrayList<CyNode>());
+			suidNodeMap.put(node.getSUID(), node);
 		}
 		
 		nodeDistanceMap.put(source, 0.0);			
 		while(!nodeQueue.isEmpty()){
 			
-			node = nodeQueue.remove();
-			
+			long nodeSUID = nodeQueue.remove();
+			CyNode node = suidNodeMap.get(nodeSUID);
 			Iterator<CyNode> nodeIterator=networkSnapshot.getNeighbors(node).iterator();
 			while(nodeIterator.hasNext()){
-				CyNode node2=nodeIterator.next();
+				CyNode node2 = nodeIterator.next();
 				//System.out.println(Node2+"   "+nodeDistanceMap.get(Node2));
-				if((nodeDistanceMap.get(node)+1.0)<=nodeDistanceMap.get(node2)){
+				if((nodeDistanceMap.get(node)+1.0) <= nodeDistanceMap.get(node2)){
 					nodeDistanceMap.put(node2,nodeDistanceMap.get(node)+1.0);
 					if(!nodePreviousMap.get(node2).contains(node)){
 						nodePreviousMap.get(node2).add(node);
 					}
-					nodeQueue.add(node2);
+					nodeQueue.add(node2.getSUID());
 				}
 			}
 		}
+		return nodeDistanceMap;
+	}
+	
+	public HashMap<CyNode, Double> getDirectedDijkstraDistanceMap(CyNode source){
+		
+		PriorityQueue<Long> nodeQueue = new PriorityQueue<Long>();
+		nodeQueue.add(source.getSUID());
+		
+		//HashMap of (nodeSUID, node)
+		HashMap<Long, CyNode>suidNodeMap = new HashMap<Long, CyNode>();
+				
+		//HashMap of (node, distance from the source node)
+		nodeDistanceMap = new HashMap<CyNode,Double>();
+		
+		// HashMap of (node, previous nodes in the path) 
+		nodePreviousMap = new HashMap<CyNode,List<CyNode>>();
+		
+		for(CyNode node : networkSnapshot.getNodes()){
+			nodeDistanceMap.put(node, Double.POSITIVE_INFINITY);
+			nodePreviousMap.put(node,new ArrayList<CyNode>());
+			suidNodeMap.put(node.getSUID(), node);
+		}
+		nodeDistanceMap.put(source, 0.0);	
+		while(!nodeQueue.isEmpty()){
+			
+			long nodeSUID = nodeQueue.remove();
+			CyNode node = suidNodeMap.get(nodeSUID);
+			Iterator<CyEdge> edgeIterator=networkSnapshot.getOutEdges(node).iterator();
+			while(edgeIterator.hasNext()){
+				CyEdge edge = edgeIterator.next();
+				//System.out.println(Node2+"   "+nodeDistanceMap.get(Node2));
+				if((nodeDistanceMap.get(node)+1.0) <= nodeDistanceMap.get(edge.getTarget())){
+					nodeDistanceMap.put(edge.getTarget(),nodeDistanceMap.get(node)+1.0);
+					if(!nodePreviousMap.get(edge.getTarget()).contains(node)){
+						nodePreviousMap.get(edge.getTarget()).add(node);
+					}
+					nodeQueue.add(edge.getTarget().getSUID());
+				}
+			}
+		}		
 		return nodeDistanceMap;
 	}
 	
@@ -85,10 +125,11 @@ public class DijkstraDistance<T>{
 	
 	public List<CyNode> getShortestPaths(CyNode source, CyNode target){
 		List<CyNode> shortestPath = new ArrayList<CyNode>();
+		List<CyNode> previous = nodePreviousMap.get(target);
 		shortestPath.add(target);
-		while(nodePreviousMap.get(target)!=null){
-			shortestPath.add(nodePreviousMap.get(target).get(0));
-			target=nodePreviousMap.get(target).get(0);
+		while(previous!=null){
+			shortestPath.add(previous.get(0));
+			previous = nodePreviousMap.get(target);
 		}
 		
 		Collections.reverse(shortestPath);
@@ -97,5 +138,3 @@ public class DijkstraDistance<T>{
 		return shortestPath;
 	}	
 }
-
-	
