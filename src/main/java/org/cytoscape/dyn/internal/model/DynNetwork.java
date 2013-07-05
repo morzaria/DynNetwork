@@ -318,6 +318,7 @@ public interface DynNetwork<T>
 	 */
 	public void finalizeNetwork();
 	
+	public void UpdateNetwork();
 	/**
 	 * Get minimum time.
 	 * @return minimum time

@@ -125,8 +125,9 @@ public class DynamicInOutDegree<T> extends AbstractTask{
 			startTime = endTime;
 			
 		}
-		dynamicnetwork.finalizeNetwork();
+		System.out.println(nodeTimeInDegreeMap);
+		System.out.println(nodeTimeOutDegreeMap);
+		dynamicnetwork.UpdateNetwork();
 	}
-
 }
 

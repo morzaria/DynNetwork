@@ -79,7 +79,7 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 	private double maxStartTime = Double.NEGATIVE_INFINITY;
 	private double minEndTime = Double.POSITIVE_INFINITY;
 	private double maxEndTime = Double.NEGATIVE_INFINITY;
-
+	
 	/**
 	 * <code> DynNetworkImpl </code> constructor.
 	 * @param network
@@ -384,11 +384,11 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 	// xgmml files is less computationally expensive.
 	@Override
 	public void finalizeNetwork() 
-	{
+	{	
 		for (DynAttribute<T> attr : graphTable.values())
 			for (DynInterval<T> interval : attr.getIntervalList())
 				if (attr.getColumn().equals("name"))
-					graphTree.insert(interval, attr.getRow());
+					graphTree.insert(interval, attr.getRow());	
 				else
 					graphTreeAttr.insert(interval, attr.getRow());	
 
@@ -405,6 +405,44 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 					edgeTree.insert(interval, attr.getRow());
 				else
 					edgeTreeAttr.insert(interval, attr.getRow());
+	}
+	
+	@Override
+	public void UpdateNetwork()
+	{
+		for (DynAttribute<T> attr : graphTable.values())
+			for (DynInterval<T> interval : attr.getIntervalList()){
+				if(attr.getColumn().equals("name")){
+					graphTree.remove(interval, attr.getRow());
+					graphTree.insert(interval, attr.getRow());
+				}
+				else{
+					graphTreeAttr.remove(interval, attr.getRow());
+					graphTreeAttr.insert(interval,  attr.getRow());
+				}
+			}	
+		for(DynAttribute<T> attr : nodeTable.values())
+			for(DynInterval<T> interval : attr.getIntervalList()){
+				if(attr.getColumn().equals("name")){
+					nodeTree.remove(interval, attr.getRow());
+					nodeTree.insert(interval, attr.getRow());
+				}
+				else{
+					nodeTreeAttr.remove(interval, attr.getRow());
+					nodeTreeAttr.insert(interval,  attr.getRow());
+				}
+			}	
+		for (DynAttribute<T> attr : edgeTable.values())
+			for (DynInterval<T> interval : attr.getIntervalList()){
+				if(attr.getColumn().equals("name")){
+					edgeTree.remove(interval, attr.getRow());
+					edgeTree.insert(interval, attr.getRow());
+				}
+				else{
+					edgeTreeAttr.remove(interval,attr.getRow());
+					edgeTreeAttr.insert(interval, attr.getRow());
+				}	
+			}	
 	}
 
 	@Override

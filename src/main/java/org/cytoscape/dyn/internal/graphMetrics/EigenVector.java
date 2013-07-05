@@ -29,12 +29,11 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 
-
 /**
  * @author Jimmy
- *
+ * 
  */
-public class EigenVector<T> extends AbstractTask{
+public class EigenVector<T> extends AbstractTask {
 
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
 	private CyNetworkView cyNetworkView;
@@ -42,7 +41,7 @@ public class EigenVector<T> extends AbstractTask{
 	private CyRootNetworkManager rootNetworkManager;
 	private CyNetworkNaming nameUtil;
 	private DynNetworkManagerImpl<T> dynNetManager;
-	
+
 	/**
 	 * @param dynNetViewManager
 	 * @param cyNetworkView
@@ -70,71 +69,81 @@ public class EigenVector<T> extends AbstractTask{
 		monitor.setTitle("Calculating EigenVectorCentrality");
 		DynNetworkFactoryImpl<T> dynNetFactory = new DynNetworkFactoryImpl<T>(
 				networkFactory, rootNetworkManager, dynNetManager, nameUtil);
-		DynNetworkView<T> view=dynNetViewManager.getDynNetworkView(cyNetworkView);
-		DynNetworkSnapshotImpl<T> networkSnapshot=new DynNetworkSnapshotImpl<T>(view);
+		DynNetworkView<T> view = dynNetViewManager
+				.getDynNetworkView(cyNetworkView);
+		DynNetworkSnapshotImpl<T> networkSnapshot = new DynNetworkSnapshotImpl<T>(
+				view);
 
-		//Need the dynamic network to get event time list
-		DynNetwork<T> dynamicnetwork=view.getNetwork();
+		// Need the dynamic network to get event time list
+		DynNetwork<T> dynamicnetwork = view.getNetwork();
 
-		//Declaring and Initialising eventTimeList of the Dynamic Network
+		// Declaring and Initialising eventTimeList of the Dynamic Network
 
-		List<Double> eventTimeList=new ArrayList<Double>();
-		eventTimeList=dynamicnetwork.getEventTimeList();
+		List<Double> eventTimeList = new ArrayList<Double>();
+		eventTimeList = dynamicnetwork.getEventTimeList();
 
-		Iterator<Double> iterator=eventTimeList.iterator();
+		Iterator<Double> iterator = eventTimeList.iterator();
 
-		//Declaring and Initialising two temporary variables for start time and end time
+		// Declaring and Initialising two temporary variables for start time and
+		// end time
 
 		Double startTime, endTime;
-		startTime=iterator.next();
-		DynIntervalDouble snapshotInterval=new DynIntervalDouble(startTime,startTime);
-		networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);
-		List<CyNode> nodeList=new ArrayList<CyNode>();
-		
-		while(iterator.hasNext()){
-			
-			snapshotInterval.setStart(startTime);
-			endTime=iterator.next();
-			snapshotInterval.setEnd(endTime);
-			//List<CyNode> nodeList=new ArrayList<CyNode>();
-			
-			networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,0.0,0.0);
-			nodeList=networkSnapshot.getNodes();
-			Collections.sort(nodeList, new MyComparator());
-		
-			double[][] adjacencyMatrixOfNetwork = new double[nodeList.size()][nodeList.size()];
-			
-			int i = 0;
-			//System.out.println(nodeList);
-	        for (CyNode root : nodeList){
-	            for(CyNode neighbor : networkSnapshot.getNeighbors(root)){
-	                adjacencyMatrixOfNetwork[i][nodeList.indexOf(neighbor)] = 1.0 ;
-	            }
-	            i++;
-	        }
-	        Matrix A = new Matrix(adjacencyMatrixOfNetwork);
+		startTime = iterator.next();
+		DynIntervalDouble snapshotInterval = new DynIntervalDouble(startTime,
+				startTime);
+		networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,
+				0.0, 0.0);
+		List<CyNode> nodeList = new ArrayList<CyNode>();
 
-	        EigenvalueDecomposition e = A.eig();
-	        Matrix V = e.getV();
-		
-	        double[][] EigenVectors = V.getArray();
-	        
-	        double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, totalsum = 0, currentvalue;
-            for (int j=0 ; j<nodeList.size() ; j++) {
-                
-            	currentvalue = EigenVectors[j][nodeList.size()-1];
-            	//System.out.println(currentvalue);
-                if (currentvalue < min) {
-                    min = currentvalue;
-                }
-                if (currentvalue > max) {
-                    max = currentvalue;
-                }
-                dynNetFactory.addedNodeAttribute(dynamicnetwork, nodeList.get(j), "Eigenvector", Double.toString(currentvalue) , "real", startTime.toString(), endTime.toString());
-                //System.out.println(currentvalue);
-                totalsum = totalsum + currentvalue;
-            }
-	        startTime=endTime;
+		while (iterator.hasNext()) {
+
+			snapshotInterval.setStart(startTime);
+			endTime = iterator.next();
+			snapshotInterval.setEnd(endTime);
+			// List<CyNode> nodeList=new ArrayList<CyNode>();
+
+			networkSnapshot.setInterval((DynInterval<T>) snapshotInterval, 0.0,
+					0.0, 0.0);
+			nodeList = networkSnapshot.getNodes();
+			Collections.sort(nodeList, new MyComparator());
+
+			double[][] adjacencyMatrixOfNetwork = new double[nodeList.size()][nodeList
+					.size()];
+
+			int i = 0;
+			// System.out.println(nodeList);
+			for (CyNode root : nodeList) {
+				for (CyNode neighbor : networkSnapshot.getNeighbors(root)) {
+					adjacencyMatrixOfNetwork[i][nodeList.indexOf(neighbor)] = 1.0;
+				}
+				i++;
+			}
+			Matrix A = new Matrix(adjacencyMatrixOfNetwork);
+
+			EigenvalueDecomposition e = A.eig();
+			Matrix V = e.getV();
+
+			double[][] EigenVectors = V.getArray();
+
+			double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, totalsum = 0, currentvalue;
+			for (int j = 0; j < nodeList.size(); j++) {
+
+				currentvalue = EigenVectors[j][nodeList.size() - 1];
+				// System.out.println(currentvalue);
+				if (currentvalue < min) {
+					min = currentvalue;
+				}
+				if (currentvalue > max) {
+					max = currentvalue;
+				}
+				dynNetFactory.addedNodeAttribute(dynamicnetwork,
+						nodeList.get(j), "Eigenvector",
+						Double.toString(currentvalue), "real",
+						startTime.toString(), endTime.toString());
+				System.out.println(currentvalue);
+				totalsum = totalsum + currentvalue;
+			}
+			startTime = endTime;
 		}
 	}
 }

@@ -221,10 +221,10 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 			startTime = endTime;
 		}
 		//dynamicnetwork.finalizeNetwork();
-		//System.out.println("Eccentricity\n"+nodeTimeEccentricityMap+"\n");
-		//System.out.println("Closeness\n"+nodeTimeClosenessMap+"\n");
-		//System.out.println("Radiality\n"+nodeTimeRadialityMap+"\n");
-		//System.out.println("Centroid\n"+nodeTimeCentroidMap);
+		System.out.println("Eccentricity\n"+nodeTimeEccentricityMap+"\n");
+		System.out.println("Closeness\n"+nodeTimeClosenessMap+"\n");
+		System.out.println("Radiality\n"+nodeTimeRadialityMap+"\n");
+		System.out.println("Centroid\n"+nodeTimeCentroidMap);
 		
 	}
 
