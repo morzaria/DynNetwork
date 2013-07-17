@@ -53,8 +53,10 @@ import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.io.util.StreamUtil;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.CyTableUtil;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
+import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.session.CyNetworkNaming;
 import org.cytoscape.task.NetworkViewTaskFactory;
 import org.cytoscape.util.swing.FileUtil;
@@ -67,23 +69,25 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TunableSetter;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
+import org.cytoscape.dyn.internal.graphMetrics.GraphMetricsPanel;
+import org.cytoscape.dyn.internal.graphMetrics.GraphMetricsResultsPanel;
 import org.cytoscape.dyn.internal.graphMetrics.GraphMetricsTasks;
 
 /**
  * <code> CyActivator </code> for DynNetwork plugin.
  * 
  * @author Sabina Sara Pfister
- *
+ * 
  * @param <T>
  * @param <C>
  */
-public class CyActivator<T,C> extends AbstractCyActivator
-{
+public class CyActivator<T, C> extends AbstractCyActivator {
 	/**
 	 * <code> CyActivator </code> Constructor
 	 */
-	public CyActivator()
-	{
+	private CyServiceRegistrar cyServiceRegistrarRef;
+
+	public CyActivator() {
 		super();
 	}
 
@@ -91,91 +95,150 @@ public class CyActivator<T,C> extends AbstractCyActivator
 	 * Start bundle.
 	 */
 	@SuppressWarnings("unchecked")
-	public void start(BundleContext context)
-	{
-		
-		CySwingApplication cytoscapeDesktopService = getService(context,CySwingApplication.class);
-		CyApplicationManager cyApplicationManagerServiceRef = getService(context,CyApplicationManager.class);
-		CyNetworkManager cyNetworkManagerServiceRef = getService(context,CyNetworkManager.class);
-    	CyNetworkViewManager cyNetworkViewManagerServiceRef = getService(context,CyNetworkViewManager.class);
-    	CyNetworkViewFactory cyNetworkViewFactoryServiceRef = getService(context,CyNetworkViewFactory.class);
-    	CyNetworkFactory cyNetworkFactoryServiceRef = getService(context,CyNetworkFactory.class);
-    	CyRootNetworkManager cyRootNetworkManagerServiceRef = getService(context,CyRootNetworkManager.class);
-    	CyNetworkNaming cyNetworkNamingServiceRef = getService(context,CyNetworkNaming.class);
-    	TaskManager<T,C> taskManager = getService(context,TaskManager.class);
-    	VisualMappingManager visualMappingServiceRef = getService(context,VisualMappingManager.class);
-    	FileUtil fileUtil = getService(context,FileUtil.class);
-    	StreamUtil streamUtil = getService(context,StreamUtil.class);
-    	TunableSetter tunableSetterServiceRef = getService(context,TunableSetter.class);
-    	UndoSupport undo = getService(context,UndoSupport.class);
-    	CyEventHelper cyEventHelperRef = getService(context,CyEventHelper.class);
-    	
-    	   	
-    	
-    	DynNetworkManagerImpl<T> dynNetManager = new DynNetworkManagerImpl<T>(
-    			cyNetworkManagerServiceRef);
+	public void start(BundleContext context) {
+
+		CySwingApplication cytoscapeDesktopService = getService(context,
+				CySwingApplication.class);
+		CyApplicationManager cyApplicationManagerServiceRef = getService(
+				context, CyApplicationManager.class);
+		CyNetworkManager cyNetworkManagerServiceRef = getService(context,
+				CyNetworkManager.class);
+		CyNetworkViewManager cyNetworkViewManagerServiceRef = getService(
+				context, CyNetworkViewManager.class);
+		CyNetworkViewFactory cyNetworkViewFactoryServiceRef = getService(
+				context, CyNetworkViewFactory.class);
+		CyNetworkFactory cyNetworkFactoryServiceRef = getService(context,
+				CyNetworkFactory.class);
+		CyRootNetworkManager cyRootNetworkManagerServiceRef = getService(
+				context, CyRootNetworkManager.class);
+		CyNetworkNaming cyNetworkNamingServiceRef = getService(context,
+				CyNetworkNaming.class);
+		TaskManager<T, C> taskManager = getService(context, TaskManager.class);
+		VisualMappingManager visualMappingServiceRef = getService(context,
+				VisualMappingManager.class);
+		FileUtil fileUtil = getService(context, FileUtil.class);
+		StreamUtil streamUtil = getService(context, StreamUtil.class);
+		TunableSetter tunableSetterServiceRef = getService(context,
+				TunableSetter.class);
+		UndoSupport undo = getService(context, UndoSupport.class);
+		CyEventHelper cyEventHelperRef = getService(context,
+				CyEventHelper.class);
+
+		DynNetworkManagerImpl<T> dynNetManager = new DynNetworkManagerImpl<T>(
+				cyNetworkManagerServiceRef);
 		DynNetworkFactoryImpl<T> dynNetworkFactory = new DynNetworkFactoryImpl<T>(
-				cyNetworkFactoryServiceRef,cyRootNetworkManagerServiceRef,dynNetManager,cyNetworkNamingServiceRef);
+				cyNetworkFactoryServiceRef, cyRootNetworkManagerServiceRef,
+				dynNetManager, cyNetworkNamingServiceRef);
 		DynNetworkViewManagerImpl<T> dynNetViewManager = new DynNetworkViewManagerImpl<T>(
 				cyNetworkViewManagerServiceRef);
-    	DynNetworkViewFactoryImpl<T> dynNetworkViewFactory = new DynNetworkViewFactoryImpl<T>(
-    			dynNetViewManager, cyNetworkViewFactoryServiceRef, cyNetworkViewManagerServiceRef,visualMappingServiceRef);
-    	
-    	
-    	DynLayoutManager<T> dynLayoutManager = new DynLayoutManagerImpl<T>();
-    	DynLayoutFactory<T> dynLayoutFactory = new DynLayoutFactoryImpl<T>(dynLayoutManager);
-    	DynVizMapManager<T> dynVizMapManager = new DynVizMapManagerImpl<T>();
-    	DynVizMapFactory<T> vizMapFactory = new DynVizMapFactoryImpl<T>(dynVizMapManager);
-    	Transformator<T> transformator = new Transformator<T>(dynLayoutManager,dynVizMapManager);
-    	DynCytoPanelImpl<T,C> dynCytoPanel = new DynCytoPanelImpl<T,C>(
-    			cytoscapeDesktopService,taskManager,cyApplicationManagerServiceRef,dynNetViewManager,dynLayoutManager,dynVizMapManager,transformator,fileUtil);
-    	
-    	CyLayoutAlgorithm dynKKLayout = new KKDynLayout<T,C>("Dynamic Layouts", "Kamada-Kawai DynLayout",
-    			undo,dynCytoPanel,dynLayoutFactory,dynNetViewManager,dynLayoutManager);
-    	CyLayoutAlgorithm dynPerfuseLayout = new ForceDirectedDynLayout<T,C>("Dynamic Layouts", "Prefuse DynLayout",
-    			undo,dynCytoPanel,dynLayoutFactory,dynNetViewManager,dynLayoutManager);
-    	CyLayoutAlgorithm dynClearLayout = new CleanDynLayout<T,C>("Dynamic Layouts", "Remove DynLayout",undo,dynLayoutFactory);
-//    	CyLayoutAlgorithm dynClearVizMap = new CleanDynVizMap<T,C>("Dynamic VizMaps", "Remove DynVizMap",undo,vizMapFactory);
-    	
-    	MenuActionLoadXGMML<T,C> loadAction = new MenuActionLoadXGMML<T,C>(
-    			cytoscapeDesktopService,cyApplicationManagerServiceRef,dynCytoPanel,taskManager,dynNetManager,dynNetViewManager,dynNetworkFactory,dynNetworkViewFactory,dynLayoutFactory,vizMapFactory,fileUtil,streamUtil,tunableSetterServiceRef);
-    	MenuActionSelectVisibleNodes<T,C> selectNodesAction = new MenuActionSelectVisibleNodes<T,C>(
-    			cyApplicationManagerServiceRef,cyNetworkViewManagerServiceRef,dynNetManager,undo,cyEventHelperRef,taskManager,dynCytoPanel);
-    	MenuActionSelectVisibleEdges<T,C> selectEdgesAction = new MenuActionSelectVisibleEdges<T,C>(
-    			cyApplicationManagerServiceRef,cyNetworkViewManagerServiceRef,dynNetManager,undo,cyEventHelperRef,taskManager,dynCytoPanel);
-    	
-    	Properties myLayoutProps = new Properties();
-        myLayoutProps.setProperty("preferredMenu","Dynamic Layouts");
-        
-//        Properties myLayoutProps2 = new Properties();
-//        myLayoutProps2.setProperty("preferredMenu","Dynamic VizMaps");
+		DynNetworkViewFactoryImpl<T> dynNetworkViewFactory = new DynNetworkViewFactoryImpl<T>(
+				dynNetViewManager, cyNetworkViewFactoryServiceRef,
+				cyNetworkViewManagerServiceRef, visualMappingServiceRef);
 
-        GraphMetricsTasks<T> c=new GraphMetricsTasks<T>(dynNetViewManager,cyNetworkViewManagerServiceRef, cyNetworkFactoryServiceRef, cyRootNetworkManagerServiceRef, cyNetworkNamingServiceRef, dynNetManager );
-        
-        Properties cprops = new Properties();
-        cprops.setProperty("preferredMenu","Apps");
-        cprops.setProperty("menuGravity","11.0");
-		cprops.setProperty("title","Dynamic Graph Metrics");
-		registerService(context,c,NetworkViewTaskFactory.class,cprops);
-        
-		registerService(context,dynNetManager,DynNetworkManager.class, new Properties());
-		registerService(context,dynNetworkFactory,DynNetworkFactory.class, new Properties());
-		registerService(context,dynNetViewManager,DynNetworkViewManager.class, new Properties());
-		registerService(context,dynNetworkViewFactory,DynNetworkViewFactoryImpl.class, new Properties());
-		registerService(context,dynCytoPanel,CytoPanelComponent.class, new Properties());
-    	registerService(context,loadAction,CyAction.class, new Properties());  
-    	registerService(context,selectNodesAction,CyAction.class, new Properties()); 
-    	registerService(context,selectEdgesAction,CyAction.class, new Properties()); 
-    	registerService(context,dynCytoPanel,SetCurrentNetworkViewListener.class, new Properties());
-    	registerService(context,transformator,UpdateNetworkPresentationListener.class, new Properties());
-    	registerService(context,dynKKLayout,CyLayoutAlgorithm.class, myLayoutProps);
-    	registerService(context,dynPerfuseLayout,CyLayoutAlgorithm.class, myLayoutProps);
-    	registerService(context,dynClearLayout,CyLayoutAlgorithm.class, myLayoutProps);
-//    	registerService(context,dynClearVizMap,CyLayoutAlgorithm.class, myLayoutProps2);
-    	registerService(context,dynLayoutManager,DynLayoutManager.class, new Properties());
-    	registerService(context,dynVizMapManager,DynVizMapManager.class, new Properties());
+		DynLayoutManager<T> dynLayoutManager = new DynLayoutManagerImpl<T>();
+		DynLayoutFactory<T> dynLayoutFactory = new DynLayoutFactoryImpl<T>(
+				dynLayoutManager);
+		DynVizMapManager<T> dynVizMapManager = new DynVizMapManagerImpl<T>();
+		DynVizMapFactory<T> vizMapFactory = new DynVizMapFactoryImpl<T>(
+				dynVizMapManager);
+		Transformator<T> transformator = new Transformator<T>(dynLayoutManager,
+				dynVizMapManager);
+		DynCytoPanelImpl<T, C> dynCytoPanel = new DynCytoPanelImpl<T, C>(
+				cytoscapeDesktopService, taskManager,
+				cyApplicationManagerServiceRef, dynNetViewManager,
+				dynLayoutManager, dynVizMapManager, transformator, fileUtil);
+
+		CyLayoutAlgorithm dynKKLayout = new KKDynLayout<T, C>(
+				"Dynamic Layouts", "Kamada-Kawai DynLayout", undo,
+				dynCytoPanel, dynLayoutFactory, dynNetViewManager,
+				dynLayoutManager);
+		CyLayoutAlgorithm dynPerfuseLayout = new ForceDirectedDynLayout<T, C>(
+				"Dynamic Layouts", "Prefuse DynLayout", undo, dynCytoPanel,
+				dynLayoutFactory, dynNetViewManager, dynLayoutManager);
+		CyLayoutAlgorithm dynClearLayout = new CleanDynLayout<T, C>(
+				"Dynamic Layouts", "Remove DynLayout", undo, dynLayoutFactory);
+		// CyLayoutAlgorithm dynClearVizMap = new
+		// CleanDynVizMap<T,C>("Dynamic VizMaps",
+		// "Remove DynVizMap",undo,vizMapFactory);
+
+		MenuActionLoadXGMML<T, C> loadAction = new MenuActionLoadXGMML<T, C>(
+				cytoscapeDesktopService, cyApplicationManagerServiceRef,
+				dynCytoPanel, taskManager, dynNetManager, dynNetViewManager,
+				dynNetworkFactory, dynNetworkViewFactory, dynLayoutFactory,
+				vizMapFactory, fileUtil, streamUtil, tunableSetterServiceRef);
+		MenuActionSelectVisibleNodes<T, C> selectNodesAction = new MenuActionSelectVisibleNodes<T, C>(
+				cyApplicationManagerServiceRef, cyNetworkViewManagerServiceRef,
+				dynNetManager, undo, cyEventHelperRef, taskManager,
+				dynCytoPanel);
+		MenuActionSelectVisibleEdges<T, C> selectEdgesAction = new MenuActionSelectVisibleEdges<T, C>(
+				cyApplicationManagerServiceRef, cyNetworkViewManagerServiceRef,
+				dynNetManager, undo, cyEventHelperRef, taskManager,
+				dynCytoPanel);
+
+		Properties myLayoutProps = new Properties();
+		myLayoutProps.setProperty("preferredMenu", "Dynamic Layouts");
+
+		// Properties myLayoutProps2 = new Properties();
+		// myLayoutProps2.setProperty("preferredMenu","Dynamic VizMaps");
+
+		GraphMetricsTasks<T, C> c = new GraphMetricsTasks<T, C>(
+				dynNetViewManager, cyNetworkViewManagerServiceRef,
+				cyNetworkFactoryServiceRef, cyRootNetworkManagerServiceRef,
+				cyNetworkNamingServiceRef, dynNetManager, this);
+
+		Properties cprops = new Properties();
+		cprops.setProperty("preferredMenu", "Apps");
+		cprops.setProperty("menuGravity", "11.0");
+		cprops.setProperty("title", "Dynamic Graph Metrics");
+		registerService(context, c, NetworkViewTaskFactory.class, cprops);
+
+		cyServiceRegistrarRef = getService(context, CyServiceRegistrar.class);
+		// GraphMetricsPanel<T,C> graphMetricsPanel = new
+		// GraphMetricsPanel<T,C>(this);
+		// registerService(context, graphMetricsPanel, CytoPanelComponent.class,
+		// new Properties());
+
+		// GraphMetricsResultsPanel resultsPanel = new
+		// GraphMetricsResultsPanel();
+		// registerService(context, resultsPanel, CytoPanelComponent.class, new
+		// Properties());
+
+		registerService(context, dynNetManager, DynNetworkManager.class,
+				new Properties());
+		registerService(context, dynNetworkFactory, DynNetworkFactory.class,
+				new Properties());
+		registerService(context, dynNetViewManager,
+				DynNetworkViewManager.class, new Properties());
+		registerService(context, dynNetworkViewFactory,
+				DynNetworkViewFactoryImpl.class, new Properties());
+		registerService(context, dynCytoPanel, CytoPanelComponent.class,
+				new Properties());
+		registerService(context, loadAction, CyAction.class, new Properties());
+		registerService(context, selectNodesAction, CyAction.class,
+				new Properties());
+		registerService(context, selectEdgesAction, CyAction.class,
+				new Properties());
+		registerService(context, dynCytoPanel,
+				SetCurrentNetworkViewListener.class, new Properties());
+		registerService(context, transformator,
+				UpdateNetworkPresentationListener.class, new Properties());
+		registerService(context, dynKKLayout, CyLayoutAlgorithm.class,
+				myLayoutProps);
+		registerService(context, dynPerfuseLayout, CyLayoutAlgorithm.class,
+				myLayoutProps);
+		registerService(context, dynClearLayout, CyLayoutAlgorithm.class,
+				myLayoutProps);
+		// registerService(context,dynClearVizMap,CyLayoutAlgorithm.class,
+		// myLayoutProps2);
+		registerService(context, dynLayoutManager, DynLayoutManager.class,
+				new Properties());
+		registerService(context, dynVizMapManager, DynVizMapManager.class,
+				new Properties());
 
 	}
-	
-}
 
+	public CyServiceRegistrar getcyServiceRegistrar() {
+		return cyServiceRegistrarRef;
+	}
+
+}

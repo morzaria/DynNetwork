@@ -23,6 +23,7 @@ import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.CyTableUtil;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.session.CyNetworkNaming;
 import org.cytoscape.view.model.CyNetworkView;
@@ -76,7 +77,8 @@ public class EigenVector<T> extends AbstractTask {
 
 		// Need the dynamic network to get event time list
 		DynNetwork<T> dynamicnetwork = view.getNetwork();
-
+		System.out.println(CyTableUtil.getNodesInState(
+				dynamicnetwork.getNetwork(), "selected", true));
 		// Declaring and Initialising eventTimeList of the Dynamic Network
 
 		List<Double> eventTimeList = new ArrayList<Double>();

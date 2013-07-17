@@ -100,7 +100,6 @@ public interface DynIntervalTree<T>
 	 * Print interval tree.
 	 */
 	public void print();
-
-       
+   
 }
 

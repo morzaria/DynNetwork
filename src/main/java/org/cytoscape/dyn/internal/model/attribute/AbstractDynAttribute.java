@@ -81,7 +81,9 @@ public abstract class AbstractDynAttribute<T> implements DynAttribute<T>
 				next.setStart(interval.getStart());
 			else
 			{
-				intervalList.add(interval);
+				if(!intervalList.contains(interval)){
+					intervalList.add(interval);
+				}
 				interval.setAttribute(this);
 			}
 		}

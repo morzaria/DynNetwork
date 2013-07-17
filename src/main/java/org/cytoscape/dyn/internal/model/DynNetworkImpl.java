@@ -410,6 +410,13 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 	@Override
 	public void UpdateNetwork()
 	{
+		//graphTree.clear();
+		//graphTreeAttr.clear();
+		//nodeTree.clear();
+		//nodeTreeAttr.clear();
+		//edgeTree.clear();
+		//edgeTreeAttr.clear();
+		//nodeTreeAttr.print();
 		for (DynAttribute<T> attr : graphTable.values())
 			for (DynInterval<T> interval : attr.getIntervalList()){
 				if(attr.getColumn().equals("name")){
@@ -442,7 +449,9 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 					edgeTreeAttr.remove(interval,attr.getRow());
 					edgeTreeAttr.insert(interval, attr.getRow());
 				}	
-			}	
+			}
+		
+		//print();
 	}
 
 	@Override
