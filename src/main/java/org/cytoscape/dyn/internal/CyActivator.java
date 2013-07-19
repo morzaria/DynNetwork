@@ -86,7 +86,7 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 	 * <code> CyActivator </code> Constructor
 	 */
 	private CyServiceRegistrar cyServiceRegistrarRef;
-
+	private CySwingApplication cytoscapeDesktopService;
 	public CyActivator() {
 		super();
 	}
@@ -97,7 +97,7 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 	@SuppressWarnings("unchecked")
 	public void start(BundleContext context) {
 
-		CySwingApplication cytoscapeDesktopService = getService(context,
+		cytoscapeDesktopService = getService(context,
 				CySwingApplication.class);
 		CyApplicationManager cyApplicationManagerServiceRef = getService(
 				context, CyApplicationManager.class);
@@ -202,7 +202,7 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 		// GraphMetricsResultsPanel();
 		// registerService(context, resultsPanel, CytoPanelComponent.class, new
 		// Properties());
-
+		
 		registerService(context, dynNetManager, DynNetworkManager.class,
 				new Properties());
 		registerService(context, dynNetworkFactory, DynNetworkFactory.class,
@@ -237,8 +237,11 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 
 	}
 
-	public CyServiceRegistrar getcyServiceRegistrar() {
+	public CyServiceRegistrar getCyServiceRegistrar() {
 		return cyServiceRegistrarRef;
+	}
+	public CySwingApplication getCySwingAppication(){
+		return cytoscapeDesktopService;
 	}
 
 }

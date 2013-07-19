@@ -13,13 +13,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.time.Day;
-import org.jfree.data.time.Second;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.date.DateUtilities;
 
 /**
  * @author Jimmy 
@@ -41,7 +36,7 @@ public class GenerateChart<T> {
 	 * which will be plotted in the same graph
 	 */
 	private List<CyNode> selectedNodes;
-
+	private XYSeriesCollection dataset;
 	/**
 	 * @param dynamicNetwork
 	 * @param checkedAttributes
@@ -61,7 +56,7 @@ public class GenerateChart<T> {
 	 */
 	public JFreeChart generateTimeSeries() {
 
-		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset = new XYSeriesCollection();
 		XYSeries[] attributeSeries = new XYSeries[selectedNodes.size()
 				* checkedAttributes.size()];
 		int j = 0;
@@ -86,20 +81,23 @@ public class GenerateChart<T> {
 			}
 		}
 
-		final String title = "Dynamic Graph Metrics";
-		final String xAxisLabel = "Time";
-		final String yAxisLabel = "Centrality Value";
-		final JFreeChart chart = ChartFactory.createXYStepChart(title,
+		String title = "Dynamic Graph Metrics";
+		String xAxisLabel = "Time";
+		String yAxisLabel = "Centrality Value";
+		JFreeChart chart = ChartFactory.createXYStepChart(title,
 				xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL,
 				true, // legend
-				false, // tooltips
+				true, // tooltips
 				false // urls
 				);
 
 		NumberAxis axis = new NumberAxis();
-		axis.setRange(1.0, 3.0);
 		chart.getXYPlot().setDomainAxis(axis);
 		chart.getXYPlot().setRangeAxis(new NumberAxis());
+		chart.setBackgroundPaint(null);
 		return chart;
+	}
+	public XYSeriesCollection getDataset(){
+		return dataset;
 	}
 }

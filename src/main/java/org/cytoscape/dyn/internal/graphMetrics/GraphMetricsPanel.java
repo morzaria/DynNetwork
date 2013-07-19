@@ -32,6 +32,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.ChartFactory;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.XYSeriesCollection;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -162,9 +164,10 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 			GenerateChart<T> chartGenerator = new GenerateChart<T>(
 					this.dynamicNetwork, checkedAttributes, selectedNodes);
 			JFreeChart timeSeries = chartGenerator.generateTimeSeries();
-			GraphMetricsResultsPanel resultsPanel = new GraphMetricsResultsPanel(
-					timeSeries);
-			cyactivator.getcyServiceRegistrar().registerService(resultsPanel,
+			XYSeriesCollection dataset = chartGenerator.getDataset();
+			GraphMetricsResultsPanel<T,C> resultsPanel = new GraphMetricsResultsPanel<T,C>(
+					timeSeries,cyactivator, dataset);
+			cyactivator.getCyServiceRegistrar().registerService(resultsPanel,
 					CytoPanelComponent.class, new Properties());
 		}
 		if (e.getSource() == updateChartButton) {

@@ -8,12 +8,8 @@ import java.util.Properties;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.dyn.internal.CyActivator;
 import org.cytoscape.dyn.internal.model.DynNetwork;
-import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
 import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
-import org.cytoscape.model.CyNetworkFactory;
-import org.cytoscape.model.subnetwork.CyRootNetworkManager;
-import org.cytoscape.session.CyNetworkNaming;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
@@ -51,7 +47,7 @@ public class GraphMetricsPanelTask<T, C> extends AbstractTask {
 		DynNetwork<T> dynamicnetwork = view.getNetwork();
 		GraphMetricsPanel<T, C> graphMetricsPanel = new GraphMetricsPanel<T, C>(
 				this.cyActivator, dynamicnetwork);
-		this.cyActivator.getcyServiceRegistrar().registerService(
+		this.cyActivator.getCyServiceRegistrar().registerService(
 				graphMetricsPanel, CytoPanelComponent.class, new Properties());
 
 	}
