@@ -165,8 +165,8 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 					this.dynamicNetwork, checkedAttributes, selectedNodes);
 			JFreeChart timeSeries = chartGenerator.generateTimeSeries();
 			XYSeriesCollection dataset = chartGenerator.getDataset();
-			GraphMetricsResultsPanel<T,C> resultsPanel = new GraphMetricsResultsPanel<T,C>(
-					timeSeries,cyactivator, dataset);
+			GraphMetricsResultsPanel<T, C> resultsPanel = new GraphMetricsResultsPanel<T, C>(
+					timeSeries, cyactivator, dataset);
 			cyactivator.getCyServiceRegistrar().registerService(resultsPanel,
 					CytoPanelComponent.class, new Properties());
 		}

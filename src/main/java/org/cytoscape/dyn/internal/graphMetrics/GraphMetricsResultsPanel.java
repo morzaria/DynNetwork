@@ -82,7 +82,9 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 		if (source == enlargeButton) {
 			enlargeChart();
 		} else if (source == saveChartButton) {
-
+			SaveChartDialog dialog = new SaveChartDialog(cyActivator.getCySwingAppication()
+					.getJFrame(),timeSeries);
+			dialog.setVisible(true);
 		} else if (source == saveDataButton) {
 			saveData();
 		} else if (source == closeTabButton) {
@@ -119,19 +121,28 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 									JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 						writer = new FileWriter(file);
 						for (int i = 0; i < this.dataset.getSeriesCount(); i++) {
-							writer.write(this.dataset.getSeries(i).getKey().toString()+"\n");
-							for(int j = 0; j < this.dataset.getSeries(i).getItemCount();j++){
-								writer.write(this.dataset.getSeries(i).getDataItem(j).toString()+"\n");
+							writer.write(this.dataset.getSeries(i).getKey()
+									.toString()
+									+ "\n");
+							for (int j = 0; j < this.dataset.getSeries(i)
+									.getItemCount(); j++) {
+								writer.write(this.dataset.getSeries(i)
+										.getDataItem(j).toString()
+										+ "\n");
 							}
 						}
-					}	
-				}
-				else{
+					}
+				} else {
 					writer = new FileWriter(file);
 					for (int i = 0; i < this.dataset.getSeriesCount(); i++) {
-						writer.write(this.dataset.getSeries(i).getKey().toString()+"\n");
-						for(int j = 0; j < this.dataset.getSeries(i).getItemCount();j++){
-							writer.write(this.dataset.getSeries(i).getDataItem(j).toString()+"\n");
+						writer.write(this.dataset.getSeries(i).getKey()
+								.toString()
+								+ "\n");
+						for (int j = 0; j < this.dataset.getSeries(i)
+								.getItemCount(); j++) {
+							writer.write(this.dataset.getSeries(i)
+									.getDataItem(j).toString()
+									+ "\n");
 						}
 					}
 				}
@@ -139,10 +150,10 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			try{
+			try {
 				writer.flush();
 				writer.close();
-			}catch(Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

@@ -4,6 +4,7 @@
  */
 package org.cytoscape.dyn.internal.graphMetrics;
 
+import java.awt.Color;
 import java.util.List;
 
 import org.cytoscape.dyn.internal.model.DynNetwork;
@@ -15,9 +16,10 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 
 /**
- * @author Jimmy 
+ * @author Jimmy
  */
 public class GenerateChart<T> {
 
@@ -37,6 +39,7 @@ public class GenerateChart<T> {
 	 */
 	private List<CyNode> selectedNodes;
 	private XYSeriesCollection dataset;
+
 	/**
 	 * @param dynamicNetwork
 	 * @param checkedAttributes
@@ -84,20 +87,29 @@ public class GenerateChart<T> {
 		String title = "Dynamic Graph Metrics";
 		String xAxisLabel = "Time";
 		String yAxisLabel = "Centrality Value";
-		JFreeChart chart = ChartFactory.createXYStepChart(title,
-				xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL,
-				true, // legend
+		JFreeChart chart = ChartFactory.createXYStepChart(title, xAxisLabel,
+				yAxisLabel, dataset, PlotOrientation.VERTICAL, true, // legend
 				true, // tooltips
 				false // urls
 				);
 
-		NumberAxis axis = new NumberAxis();
-		chart.getXYPlot().setDomainAxis(axis);
-		chart.getXYPlot().setRangeAxis(new NumberAxis());
-		chart.setBackgroundPaint(null);
+		NumberAxis xaxis = new NumberAxis();
+		xaxis.setAutoRangeMinimumSize(1.0);
+		xaxis.setLabel("Time");
+		chart.getXYPlot().setDomainAxis(xaxis);
+		NumberAxis yaxis = new NumberAxis();
+		yaxis.setAutoRangeIncludesZero(true);
+		yaxis.setLabel("Centrality Value");
+		chart.getXYPlot().setRangeAxis(yaxis);
+		chart.setBackgroundPaint(Color.white);
+		//chart.setPadding(new RectangleInsets(20,20,20,20));
+		chart.getXYPlot().setBackgroundPaint(Color.white);
+		chart.getXYPlot().setDomainGridlinePaint(Color.gray);
+		chart.getXYPlot().setRangeGridlinePaint(Color.gray);
 		return chart;
 	}
-	public XYSeriesCollection getDataset(){
+
+	public XYSeriesCollection getDataset() {
 		return dataset;
 	}
 }
