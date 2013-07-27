@@ -5,7 +5,6 @@ package org.cytoscape.dyn.internal.graphMetrics;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
 import org.cytoscape.dyn.internal.view.model.DynNetworkView;
 import org.cytoscape.dyn.internal.view.model.DynNetworkViewManagerImpl;
-import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTableUtil;
@@ -138,7 +136,7 @@ public class EigenVector<T> extends AbstractTask {
 				if (currentvalue > max) {
 					max = currentvalue;
 				}
-				dynNetFactory.addedNodeAttribute(dynamicnetwork,
+				dynNetFactory.setAttributesUpdate(dynamicnetwork,
 						nodeList.get(j), "Eigenvector",
 						Double.toString(currentvalue), "real",
 						startTime.toString(), endTime.toString());

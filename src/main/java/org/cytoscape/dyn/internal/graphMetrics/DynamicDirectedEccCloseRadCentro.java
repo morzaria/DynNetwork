@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.cytoscape.dyn.internal.model.DynNetwork;
+import org.cytoscape.dyn.internal.model.DynNetworkFactory;
 import org.cytoscape.dyn.internal.model.DynNetworkFactoryImpl;
 import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshot;
@@ -65,13 +66,14 @@ public class DynamicDirectedEccCloseRadCentro<T> extends AbstractTask {
 		this.dynNetManager = dynNetManager;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run(TaskMonitor monitor) throws Exception {
 		// TODO Auto-generated method stub
 
 		monitor.setTitle("Calculating Centrality parameters");
 
-		DynNetworkFactoryImpl<T> dynNetFactory = new DynNetworkFactoryImpl<T>(
+		DynNetworkFactory<T> dynNetFactory = new DynNetworkFactoryImpl<T>(
 				networkFactory, rootNetworkManager, dynNetManager, nameUtil);
 
 		DynNetworkView<T> view = dynNetViewManager
@@ -209,28 +211,28 @@ public class DynamicDirectedEccCloseRadCentro<T> extends AbstractTask {
 			// System.out.println(nodeClosenessMap);
 
 			for (CyNode node1 : nodeList) {
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Centroid",
 						Double.toString(nodeTimeCentroidMap.get(
 								snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Eccentricity",
 						Double.toString(nodeTimeEccentricityMap.get(
 								snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Closeness",
 						Double.toString(nodeTimeClosenessMap.get(
 								snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Radiality",

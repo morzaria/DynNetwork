@@ -109,4 +109,6 @@ public interface DynNetworkFactory<T> extends Sink<T>
 	 * @param dynNetwork
 	 */
 	public void finalizeNetwork(DynNetwork<T> dynNetwork);
+	
+	public void setAttributesUpdate(DynNetwork<T> dynNetwork, CyNode node, String attName, String attValue, String attType, String start, String end);
 }

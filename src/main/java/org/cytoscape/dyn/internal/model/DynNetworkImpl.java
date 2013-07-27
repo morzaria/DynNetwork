@@ -123,6 +123,18 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 		setMinMaxTime(interval);
 		setNodeDynAttribute(network, this.nodeTable, node.getSUID(), column, interval);
 	}
+	@Override
+	public synchronized void insertNodeUpdate(CyNode node, String column, DynInterval<T> interval)
+	{
+		KeyPairs key = new KeyPairs(column, node.getSUID());
+		if(this.nodeTable.containsKey(key)){
+			this.nodeTable.get(key).addInterval(interval);
+		}
+		else
+			this.nodeTable.put(key, getAttr(interval,key));	
+		nodeTreeAttr.remove(interval, getAttr(interval,key).getRow());
+		nodeTreeAttr.insert(interval, getAttr(interval,key).getRow());
+	}
 	
 	@Override
 	public synchronized void insertEdge(CyEdge edge, String column, DynInterval<T> interval)
@@ -410,13 +422,6 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 	@Override
 	public void UpdateNetwork()
 	{
-		//graphTree.clear();
-		//graphTreeAttr.clear();
-		//nodeTree.clear();
-		//nodeTreeAttr.clear();
-		//edgeTree.clear();
-		//edgeTreeAttr.clear();
-		//nodeTreeAttr.print();
 		for (DynAttribute<T> attr : graphTable.values())
 			for (DynInterval<T> interval : attr.getIntervalList()){
 				if(attr.getColumn().equals("name")){
@@ -451,7 +456,7 @@ public final class DynNetworkImpl<T> extends AbstractDynAttributeCheck<T> implem
 				}	
 			}
 		
-		//print();
+		print();
 	}
 
 	@Override

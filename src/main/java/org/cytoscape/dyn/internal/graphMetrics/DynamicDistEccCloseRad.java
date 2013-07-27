@@ -4,7 +4,6 @@
 package org.cytoscape.dyn.internal.graphMetrics;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -241,28 +240,28 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 			// Setting Graph distance to 0 for the next iteration of time
 			dynamicGraphDistance = 0.0;
 			for (CyNode node1 : nodeList) {
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Centroid",
 						Double.toString(nodeTimeCentroidMap.get(
 								snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Eccentricity",
 						Double.toString(nodeTimeEccentricityMap.get(
 								snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Closeness",
 						Double.toString(nodeTimeClosenessMap.get(
 								snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Radiality",
@@ -277,5 +276,4 @@ public class DynamicDistEccCloseRad<T> extends AbstractTask {
 		// System.out.println("Radiality\n"+nodeTimeRadialityMap+"\n");
 		// System.out.println("Centroid\n"+nodeTimeCentroidMap);
 	}
-
 }

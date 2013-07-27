@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 
@@ -28,6 +29,8 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
+import org.freehep.graphics2d.VectorGraphics;
+import org.freehep.graphicsio.svg.SVGGraphics2D;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -74,10 +77,12 @@ public class SaveChartDialog extends JDialog implements ActionListener {
 
 		JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 4, 0));
 		saveChartButton = new JButton("Save");
-		saveChartButton.setMaximumSize(new Dimension(Short.MAX_VALUE, saveChartButton.getHeight()));
+		saveChartButton.setMaximumSize(new Dimension(Short.MAX_VALUE,
+				saveChartButton.getHeight()));
 		saveChartButton.addActionListener(this);
 		cancelButton = new JButton("Cancel");
-		cancelButton.setMaximumSize(new Dimension(Short.MAX_VALUE, cancelButton.getHeight()));
+		cancelButton.setMaximumSize(new Dimension(Short.MAX_VALUE, cancelButton
+				.getHeight()));
 		cancelButton.addActionListener(this);
 		buttonsPanel.add(saveChartButton);
 		buttonsPanel.add(cancelButton);
@@ -96,7 +101,7 @@ public class SaveChartDialog extends JDialog implements ActionListener {
 		setModal(true);
 		setResizable(false);
 		setLocationRelativeTo(frame);
-		
+
 	}
 
 	@Override
@@ -161,8 +166,13 @@ public class SaveChartDialog extends JDialog implements ActionListener {
 					} else if (ext.equals("png")) {
 						ChartUtilities.saveChartAsPNG(file, chart, width,
 								height);
-					} else { // ext.equals("svg")
-						// JFreeChartConn.saveAsSvg(file, chart, width, height);
+					} else {
+						VectorGraphics graphics = new SVGGraphics2D(file,
+								new Dimension(width, height));
+						graphics.startExport();
+						chart.draw(graphics, new Rectangle2D.Double(0, 0,
+								width, height));
+						graphics.endExport();
 					}
 				} catch (IOException ex) {
 					JOptionPane

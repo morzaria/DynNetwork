@@ -162,6 +162,16 @@ public final class DynNetworkFactoryImpl<T> extends AbstractIntervalCheck<T> imp
 		dynNetwork.insertNode(node, attName, interval);
 	}
 	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void setAttributesUpdate(DynNetwork<T> dynNetwork, CyNode node, String attName, String attValue, String attType, String start, String end)
+	{
+		Object attr = typeMap.getTypedValue(typeMap.getType(attType), attValue);
+		DynInterval<T> interval = getIntervalAttr(dynNetwork,attName,(T)attr ,start, end);
+		addRow(dynNetwork.getNetwork(), dynNetwork.getNetwork().getDefaultNodeTable(), node, attName, attr);
+		dynNetwork.insertNodeUpdate(node, attName, interval);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void setAttributes(DynNetwork<T> dynNetwork, CyEdge edge, String attName, String attValue, String attType, String start, String end)
 	{

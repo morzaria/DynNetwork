@@ -23,21 +23,20 @@ import javax.swing.table.AbstractTableModel;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.application.swing.CytoPanelState;
 import org.cytoscape.dyn.internal.CyActivator;
 import org.cytoscape.dyn.internal.model.DynNetwork;
+import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTableUtil;
 
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.ChartFactory;
-import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
 
 /**
  * @author Jimmy
@@ -50,13 +49,15 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 
 	private JPanel buttonPanel;
 	private JTable attributesTable;
+	private JTable edgeAttributesTable;
 	private JButton plotChartButton;
 	private JButton updateChartButton;
 	private CyActivator<T, C> cyactivator;
 	private DynNetwork<T> dynamicNetwork;
 
 	private List<String> checkedAttributes;
-
+	private List<String> edgeCheckedAttributes;
+	
 	public GraphMetricsPanel(
 			org.cytoscape.dyn.internal.CyActivator<T, C> cyActivator,
 			DynNetwork<T> dynamicNetwork) {
@@ -72,6 +73,15 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 		attributesTable.setShowGrid(false);
 		JScrollPane tablePanel = new JScrollPane(attributesTable);
 		tablePanel.setSize(new Dimension(250, 400));
+
+		edgeAttributesTable = new JTable(new MyTableModel(
+				dynamicNetwork.getEdgeAttributes()));
+		edgeAttributesTable.setPreferredScrollableViewportSize(new Dimension(
+				300, 400));
+		edgeAttributesTable.setFillsViewportHeight(true);
+		edgeAttributesTable.setShowGrid(false);
+		JScrollPane edgeTablePanel = new JScrollPane(edgeAttributesTable);
+		edgeTablePanel.setSize(new Dimension(250, 400));
 
 		plotChartButton = new JButton("Plot Selected Attributes");
 		updateChartButton = new JButton("Update Chart");
@@ -91,7 +101,12 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 				Color.darkGray));
 
 		tablePanel.setBorder(BorderFactory.createTitledBorder(null,
-				"Dynamic Graph Attributes", TitledBorder.DEFAULT_JUSTIFICATION,
+				"Node Attributes", TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION, new Font("SansSerif", 0, 12),
+				Color.darkGray));
+
+		edgeTablePanel.setBorder(BorderFactory.createTitledBorder(null,
+				"Edge Attributes", TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, new Font("SansSerif", 0, 12),
 				Color.darkGray));
 
@@ -104,11 +119,15 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 				.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(tablePanel, GroupLayout.DEFAULT_SIZE, 280,
 						Short.MAX_VALUE)
+				.addComponent(edgeTablePanel, GroupLayout.DEFAULT_SIZE, 280,
+						Short.MAX_VALUE)
 				.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, 280,
 						Short.MAX_VALUE));
 		cytoLayout.setVerticalGroup(cytoLayout
 				.createSequentialGroup()
-				.addComponent(tablePanel, 400, GroupLayout.DEFAULT_SIZE, 500)
+				.addComponent(tablePanel, 200, GroupLayout.DEFAULT_SIZE, 300)
+				.addComponent(edgeTablePanel, 200, GroupLayout.DEFAULT_SIZE,
+						300)
 				.addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, 280,
 						Short.MAX_VALUE));
 
@@ -149,6 +168,7 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 		 * GenerateChart.
 		 */
 		checkedAttributes = new ArrayList<String>();
+		edgeCheckedAttributes = new ArrayList<String>();
 		if (e.getSource() == plotChartButton) {
 			for (int i = 0; i < attributesTable.getRowCount(); i++) {
 
@@ -158,24 +178,32 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 				}
 
 			}
+			for (int i = 0; i < edgeAttributesTable.getRowCount(); i++) {
+
+				if (edgeAttributesTable.getValueAt(i, 1).equals(new Boolean(true))) {
+					edgeCheckedAttributes.add(edgeAttributesTable.getValueAt(i, 0)
+							.toString());
+				}
+
+			}
 			List<CyNode> selectedNodes = CyTableUtil.getNodesInState(
 					dynamicNetwork.getNetwork(), "selected", true);
+			List<CyEdge> selectedEdges = CyTableUtil.getEdgesInState(dynamicNetwork.getNetwork(), "selected", true);
 			// System.out.println(selectedNodes);
 			GenerateChart<T> chartGenerator = new GenerateChart<T>(
-					this.dynamicNetwork, checkedAttributes, selectedNodes);
+					this.dynamicNetwork, checkedAttributes, edgeCheckedAttributes, selectedNodes,selectedEdges);
 			JFreeChart timeSeries = chartGenerator.generateTimeSeries();
 			XYSeriesCollection dataset = chartGenerator.getDataset();
 			GraphMetricsResultsPanel<T, C> resultsPanel = new GraphMetricsResultsPanel<T, C>(
 					timeSeries, cyactivator, dataset);
 			cyactivator.getCyServiceRegistrar().registerService(resultsPanel,
 					CytoPanelComponent.class, new Properties());
+			cyactivator.getCySwingAppication().getCytoPanel(CytoPanelName.EAST).setState(CytoPanelState.DOCK);
 		}
 		if (e.getSource() == updateChartButton) {
-
+			cyactivator.getCyServiceRegistrar().unregisterService(this, CytoPanelComponent.class);
 		}
-
 	}
-
 }
 
 /* This is the table model for the JTable attributesTable */
@@ -188,7 +216,7 @@ class MyTableModel extends AbstractTableModel {
 		columnNames = new String[2];
 		columnNames[0] = "Attribute";
 		columnNames[1] = "Check";
-		data = new Object[attributeList.size()][attributeList.size()];
+		data = new Object[attributeList.size()][2];
 		for (int i = 0; i < attributeList.size(); i++) {
 			data[i][0] = attributeList.get(i);
 			data[i][1] = new Boolean(false);
@@ -236,5 +264,4 @@ class MyTableModel extends AbstractTableModel {
 		data[row][col] = value;
 		fireTableCellUpdated(row, col);
 	}
-
 }

@@ -1,11 +1,11 @@
 /**
- * This task computes Betweenness and Stress using Brandes' algorithm which takes O(VE) time for
- * unweighed graphs.
- *
+ * 
  */
 package org.cytoscape.dyn.internal.graphMetrics;
 
 /**
+ * This task computes Betweenness and Stress using Brandes' algorithm which takes O(VE) time for
+ * unweighed graphs.
  * @author Jimmy
  *
  */
@@ -25,6 +25,7 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.dyn.internal.model.DynNetwork;
+import org.cytoscape.dyn.internal.model.DynNetworkFactory;
 import org.cytoscape.dyn.internal.model.DynNetworkFactoryImpl;
 import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
@@ -74,7 +75,7 @@ public class DynamicDirectedBetweennessStress<T> extends AbstractTask {
 
 		monitor.setTitle("Calculating Betweenness and Stress");
 
-		DynNetworkFactoryImpl<T> dynNetFactory = new DynNetworkFactoryImpl<T>(
+		DynNetworkFactory<T> dynNetFactory = new DynNetworkFactoryImpl<T>(
 				networkFactory, rootNetworkManager, dynNetManager, nameUtil);
 
 		// To get DynNetworkView which need to be passed to
@@ -203,14 +204,14 @@ public class DynamicDirectedBetweennessStress<T> extends AbstractTask {
 			nodeTimeBetweennessMap.put(snapshotInterval.getStart(),
 					nodeBetweennessMap);
 			for (CyNode node : nodeList) {
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node,
 						"Betweenness",
 						Double.toString(nodeTimeBetweennessMap.get(
 								snapshotInterval.getStart()).get(node)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node,
 						"Stress",

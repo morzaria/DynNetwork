@@ -38,6 +38,7 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 	private JButton saveChartButton;
 	private JButton saveDataButton;
 	private JButton closeTabButton;
+	private JButton helpButton;
 	private JFreeChart timeSeries;
 	private ChartPanel chartPanel;
 	private ChartPanel chartPanelForDialog;
@@ -56,18 +57,27 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 	public void initComponents() {
 		enlargeButton = new JButton("Enlarge Chart");
 		enlargeButton.addActionListener(this);
+		enlargeButton.setToolTipText("View chart in a new window.");
 		saveChartButton = new JButton("Save Chart");
 		saveChartButton.addActionListener(this);
+		saveChartButton
+				.setToolTipText("Save the chart as a .jpg/.png/.svg file.");
 		saveDataButton = new JButton("Save Data");
 		saveDataButton.addActionListener(this);
+		saveDataButton.setToolTipText("Save data in a file.");
 		closeTabButton = new JButton("Close Tab");
 		closeTabButton.addActionListener(this);
+		closeTabButton.setToolTipText("Close this tab.");
+		helpButton = new JButton("Help");
+		helpButton.setToolTipText("Get help! Everyone needs it.");
+		helpButton.addActionListener(this);
 		buttonsPanel = new JPanel();
 		chartPanel = new ChartPanel(this.timeSeries);
 		buttonsPanel.add(enlargeButton);
 		buttonsPanel.add(saveChartButton);
 		buttonsPanel.add(saveDataButton);
 		buttonsPanel.add(closeTabButton);
+		buttonsPanel.add(helpButton);
 		buttonsPanel.setLayout(new FlowLayout());
 		this.add(chartPanel);
 		this.add(buttonsPanel);
@@ -82,16 +92,18 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 		if (source == enlargeButton) {
 			enlargeChart();
 		} else if (source == saveChartButton) {
-			SaveChartDialog dialog = new SaveChartDialog(cyActivator.getCySwingAppication()
-					.getJFrame(),timeSeries);
+			SaveChartDialog dialog = new SaveChartDialog(cyActivator
+					.getCySwingAppication().getJFrame(), timeSeries);
 			dialog.setVisible(true);
 		} else if (source == saveDataButton) {
 			saveData();
 		} else if (source == closeTabButton) {
 			cyActivator.getCyServiceRegistrar().unregisterService(this,
 					CytoPanelComponent.class);
+		} else if (source == helpButton) {
+			DynamicNetworkHelp help = new DynamicNetworkHelp();
+			help.displayHelp();
 		}
-
 	}
 
 	public void enlargeChart() {

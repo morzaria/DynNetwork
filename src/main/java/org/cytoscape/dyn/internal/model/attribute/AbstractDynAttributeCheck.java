@@ -55,7 +55,9 @@ public abstract class AbstractDynAttributeCheck<T>
 		if (map.containsKey(key))
 		{
 			checkNodeIntervals(network,map.get(key), interval);
-			extendInterval(map.get(key).getPredecessor(interval), interval, map.get(key).getSuccesor(interval));
+			if(map.get(key).getPredecessor(interval)!=null&& map.get(key).getSuccesor(interval)!=null){
+				extendInterval(map.get(key).getPredecessor(interval), interval, map.get(key).getSuccesor(interval));
+			}
 		}
 		else
 			map.put(key, getAttr(interval,key));
@@ -67,7 +69,9 @@ public abstract class AbstractDynAttributeCheck<T>
 		if (map.containsKey(key))
 		{
 			checkEdgeIntervals(network,map.get(key), interval);
-			extendInterval(map.get(key).getPredecessor(interval), interval, map.get(key).getSuccesor(interval));
+			if(map.get(key).getPredecessor(interval)!=null&& map.get(key).getSuccesor(interval)!=null){
+				extendInterval(map.get(key).getPredecessor(interval), interval, map.get(key).getSuccesor(interval));
+			}
 		}
 		else
 			map.put(key, getAttr(interval,key));

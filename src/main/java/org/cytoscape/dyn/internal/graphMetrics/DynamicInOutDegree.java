@@ -18,7 +18,6 @@ import org.cytoscape.dyn.internal.model.DynNetwork;
 import org.cytoscape.dyn.internal.model.DynNetworkFactory;
 import org.cytoscape.dyn.internal.model.DynNetworkFactoryImpl;
 import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
-import org.cytoscape.dyn.internal.model.attribute.DynAttribute;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
 import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
@@ -38,8 +37,6 @@ public class DynamicInOutDegree<T> extends AbstractTask {
 	private HashMap<Double, HashMap<CyNode, Integer>> nodeTimeOutDegreeMap;
 	private HashMap<CyNode, Integer> nodeInDegreeMap;
 	private HashMap<CyNode, Integer> nodeOutDegreeMap;
-	private List<String> attributeList;
-
 	/**
 	 * @param dynNetViewManager
 	 * @param cyNetworkView
@@ -66,13 +63,7 @@ public class DynamicInOutDegree<T> extends AbstractTask {
 
 		DynNetworkFactory<T> dynNetFactory = new DynNetworkFactoryImpl<T>(
 				networkFactory, rootNetworkManager, dynNetManager, nameUtil);
-		// To get DynNetworkView which need to be passed to
-		// DynNetworkSnapshotImpl
-		// Collection<DynNetworkView<T>> dyncollection=new
-		// ArrayList<DynNetworkView<T>>();
-		// dyncollection=dynNetViewManager.getDynNetworkViews();
-		// Iterator<DynNetworkView<T>> it=dyncollection.iterator();
-
+		
 		DynNetworkView<T> view = dynNetViewManager
 				.getDynNetworkView(cyNetworkView);
 		DynNetworkSnapshotImpl<T> networkSnapshot = new DynNetworkSnapshotImpl<T>(
@@ -130,14 +121,14 @@ public class DynamicInOutDegree<T> extends AbstractTask {
 					nodeOutDegreeMap);
 
 			for (CyNode node1 : nodeList) {
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"InDegree",
 						Double.toString(nodeTimeInDegreeMap.get(
 								snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.addedNodeAttribute(
+				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"OutDegree",
@@ -150,7 +141,6 @@ public class DynamicInOutDegree<T> extends AbstractTask {
 		}
 		// System.out.println(nodeTimeInDegreeMap);
 		// System.out.println(nodeTimeOutDegreeMap);
-		dynamicnetwork.UpdateNetwork();
-		attributeList = dynamicnetwork.getNodeAttributes();
+		//dynamicnetwork.UpdateNetwork();
 	}
 }

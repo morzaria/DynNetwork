@@ -203,7 +203,11 @@
 			<artifactId>app-api</artifactId>
 			<version>${cytoscape.api.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>cytoscape-sun</groupId>
+			<artifactId>jhall</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.ops4j.pax.logging</groupId>
