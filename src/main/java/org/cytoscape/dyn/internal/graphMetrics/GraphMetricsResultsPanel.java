@@ -45,6 +45,11 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 	private CyActivator<T, C> cyActivator;
 	private XYSeriesCollection dataset;
 
+	/**
+	 * @param timeSeries
+	 * @param cyActivator
+	 * @param dataset
+	 */
 	public GraphMetricsResultsPanel(JFreeChart timeSeries,
 			CyActivator<T, C> cyActivator, XYSeriesCollection dataset) {
 
@@ -54,6 +59,9 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 		initComponents();
 	}
 
+	/**
+	 * 
+	 */
 	public void initComponents() {
 		enlargeButton = new JButton("Enlarge Chart");
 		enlargeButton.addActionListener(this);
@@ -106,6 +114,9 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void enlargeChart() {
 		chartPanelForDialog = new ChartPanel(this.timeSeries);
 		JDialog dialog = new JDialog(cyActivator.getCySwingAppication()
@@ -117,6 +128,9 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 		dialog.setVisible(true);
 	}
 
+	/**
+	 * 
+	 */
 	public void saveData() {
 		JFileChooser saveFileDialog = new JFileChooser();
 		int save = saveFileDialog.showSaveDialog(null);

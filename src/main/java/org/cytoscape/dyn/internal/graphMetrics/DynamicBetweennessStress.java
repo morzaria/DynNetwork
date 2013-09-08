@@ -3,13 +3,6 @@
  */
 package org.cytoscape.dyn.internal.graphMetrics;
 
-/**
- * This task computes Betweenness and Stress using Brandes' algorithm which takes O(VE) time for
- * unweighed graphs.
- * @author Jimmy
- *
- */
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +28,14 @@ import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
+/**
+ * <code>DynamicBetweennesStress</code> computes Betweenness and Stress using
+ * Brandes' algorithm which takes O(VE) time for unweighed graphs.
+ * 
+ * @author Jimmy
+ * 
+ * @param <T>
+ */
 public class DynamicBetweennessStress<T> extends AbstractTask {
 
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
@@ -69,6 +70,9 @@ public class DynamicBetweennessStress<T> extends AbstractTask {
 		this.dynNetManager = dynNetManager;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cytoscape.work.AbstractTask#run(org.cytoscape.work.TaskMonitor)
+	 */
 	@SuppressWarnings("unchecked")
 	public void run(TaskMonitor monitor) {
 

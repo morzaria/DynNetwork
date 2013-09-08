@@ -168,6 +168,7 @@ public class MenuActionLoadXGMML<T,C> extends AbstractCyAction
 	{
 		List<FileChooserFilter> filters = new ArrayList<FileChooserFilter>();
     	filters.add(new FileChooserFilter("XGMML", "xgmml"));
+    	filters.add(new FileChooserFilter("CSV", "csv"));
     	return filters;
 	}
 }

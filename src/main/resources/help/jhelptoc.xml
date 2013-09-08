@@ -12,4 +12,14 @@
 	<tocitem text="Computing centrality measures" target="computingcentralitymeasures_htm"/>
 	<tocitem text="Plot Chart" target="plotchart_htm"/>
   </tocitem>
+  <tocitem text ="Centrality Definition" target="centralitydefinition_htm">
+	<tocitem text="Degree" target="degree_htm"/>
+	<tocitem text="Diameter" target="diameter_htm"/>
+	<tocitem text="Eccentricity" target="eccentricity_htm"/>
+	<tocitem text="Closeness" target="closeness_htm"/>
+	<tocitem text="Radiality" target="radiality_htm"/>
+	<tocitem text="Centroid Value" target="centroid_htm"/>
+	<tocitem text="Stress" target="stress_htm"/>
+	<tocitem text="Betweenness" target="betweenness_htm"/>
+  </tocitem>
 </toc>

@@ -10,4 +10,12 @@
   <mapID target="import_htm" url="import.html" />
   <mapID target="computingcentralitymeasures_htm" url="computingcentralitymeasures.html" />
   <mapID target="plotchart_htm" url="plotchart.html" />
+  <mapID target="degree_htm" url="degree.html" />
+  <mapID target="diameter_htm" url="diameter.html" />
+  <mapID target="eccentricity_htm" url="eccentricity.html" />
+  <mapID target="closeness_htm" url="closeness.html" />
+  <mapID target="radiality_htm" url="radiality.html" />
+  <mapID target="stress_htm" url="stress.html" />
+  <mapID target="betweenness_htm" url="betweenness.html" />
+  <mapID target="centroid_htm" url="centroidvalue.html" />
 </map>

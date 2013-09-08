@@ -26,6 +26,7 @@ import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.application.swing.CyAction;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelComponent;
+import org.cytoscape.dyn.internal.action.MenuActionLoadCSV;
 import org.cytoscape.dyn.internal.action.MenuActionLoadXGMML;
 import org.cytoscape.dyn.internal.action.MenuActionSelectVisibleEdges;
 import org.cytoscape.dyn.internal.action.MenuActionSelectVisibleNodes;
@@ -174,6 +175,11 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 				cyApplicationManagerServiceRef, cyNetworkViewManagerServiceRef,
 				dynNetManager, undo, cyEventHelperRef, taskManager,
 				dynCytoPanel);
+		MenuActionLoadCSV<T, C> loadActionCSV = new MenuActionLoadCSV<T, C>(
+				cytoscapeDesktopService, cyApplicationManagerServiceRef,
+				dynCytoPanel, taskManager, dynNetManager, dynNetViewManager,
+				dynNetworkFactory, dynNetworkViewFactory, dynLayoutFactory,
+				vizMapFactory, fileUtil, streamUtil, tunableSetterServiceRef);
 
 		Properties myLayoutProps = new Properties();
 		myLayoutProps.setProperty("preferredMenu", "Dynamic Layouts");
@@ -193,15 +199,7 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 		registerService(context, c, NetworkViewTaskFactory.class, cprops);
 
 		cyServiceRegistrarRef = getService(context, CyServiceRegistrar.class);
-		// GraphMetricsPanel<T,C> graphMetricsPanel = new
-		// GraphMetricsPanel<T,C>(this);
-		// registerService(context, graphMetricsPanel, CytoPanelComponent.class,
-		// new Properties());
 
-		// GraphMetricsResultsPanel resultsPanel = new
-		// GraphMetricsResultsPanel();
-		// registerService(context, resultsPanel, CytoPanelComponent.class, new
-		// Properties());
 		
 		registerService(context, dynNetManager, DynNetworkManager.class,
 				new Properties());
@@ -214,6 +212,7 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 		registerService(context, dynCytoPanel, CytoPanelComponent.class,
 				new Properties());
 		registerService(context, loadAction, CyAction.class, new Properties());
+		registerService(context, loadActionCSV, CyAction.class, new Properties());
 		registerService(context, selectNodesAction, CyAction.class,
 				new Properties());
 		registerService(context, selectEdgesAction, CyAction.class,
