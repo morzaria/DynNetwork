@@ -3,6 +3,7 @@
  */
 package org.cytoscape.dyn.internal.io.read.csv;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +30,7 @@ public class DynHandlerCSV<T> extends AbstractCSVSource<T>{
 
 	
 	private CSVReader csvReader;
+	private File file;
 
 	HashMap<Integer, String> nodeAttributeFieldMap = new HashMap<Integer, String>();
 	HashMap<String, Integer> nodeFieldMap = new HashMap<String, Integer>();
@@ -58,12 +60,13 @@ public class DynHandlerCSV<T> extends AbstractCSVSource<T>{
 	 */
 	public DynHandlerCSV(DynNetworkFactory<T> networkSink,
 			DynNetworkViewFactory<T> viewSink, DynLayoutFactory<T> layoutSink,
-			DynVizMapFactory<T> vizMapSink, CSVReader csvReader) {
+			DynVizMapFactory<T> vizMapSink, CSVReader csvReader, File file) {
 		super.networkSink = networkSink;
 		super.viewSink = viewSink;
 		super.layoutSink = layoutSink;
 		super.vizMapSink = vizMapSink;
 		this.csvReader = csvReader;
+		this.file = file;
 	}
 
 	public void readNetwork() {
@@ -75,7 +78,7 @@ public class DynHandlerCSV<T> extends AbstractCSVSource<T>{
 				
 		String nextLine[];
 		
-		DynNetwork<T> dynamicNetwork = networkSink.addedGraph("1", "Test", null, null, "1");
+		DynNetwork<T> dynamicNetwork = networkSink.addedGraph("1", file.getName().substring(0, file.getName().length()-4), null, null, "1");
 		try {
 			nextLine = this.csvReader.readNext();
 			while (nextLine != null) {
@@ -94,24 +97,24 @@ public class DynHandlerCSV<T> extends AbstractCSVSource<T>{
 							nodeFieldMap.put("StartTime", i);
 						else if(nextLine[i].equalsIgnoreCase("EndTime"))
 							nodeFieldMap.put("EndTime", i);
-						else if( nextLine[i].equalsIgnoreCase("Label"))
+						else if(nextLine[i].equalsIgnoreCase("Label"))
 							nodeFieldMap.put("Label", i);
 						else if(nextLine[i].equalsIgnoreCase("StartTime"))
 							nodeFieldMap.put("StartTime", i);
 						else if(nextLine[i].equalsIgnoreCase("type"))
-							nodeFieldMap.put("type", i);
+							nodeGraphicAttributesFieldMap.put("type", i);
 						else if(nextLine[i].equalsIgnoreCase("height"))
-							nodeFieldMap.put("height", i);
+							nodeGraphicAttributesFieldMap.put("height", i);
 						else if(nextLine[i].equalsIgnoreCase("width"))
-							nodeFieldMap.put("width", i);
+							nodeGraphicAttributesFieldMap.put("width", i);
 						else if(nextLine[i].equalsIgnoreCase("size"))
-							nodeFieldMap.put("size", i);
+							nodeGraphicAttributesFieldMap.put("size", i);
 						else if(nextLine[i].equalsIgnoreCase("borderwidth"))
-							nodeFieldMap.put("borderwidth", i);
+							nodeGraphicAttributesFieldMap.put("borderwidth", i);
 						else if(nextLine[i].equalsIgnoreCase("fill"))
-							nodeFieldMap.put("fill", i);
+							nodeGraphicAttributesFieldMap.put("fill", i);
 						else if(nextLine[i].equalsIgnoreCase("transparency"))
-							nodeFieldMap.put("transparency", i);
+							nodeGraphicAttributesFieldMap.put("transparency", i);
 						else
 							nodeAttributeFieldMap.put(i,checkNodeAttributeName(nextLine[i]));
 					}
@@ -152,7 +155,7 @@ public class DynHandlerCSV<T> extends AbstractCSVSource<T>{
 						Map.Entry<Integer, String> pairs = (Map.Entry<Integer, String>)i.next();
 						addNodeAttribute(dynamicNetwork, node, pairs.getValue(), nextLine[pairs.getKey()], "string", nextLine[nodeFieldMap.get("StartTime")], nextLine[nodeFieldMap.get("EndTime")]);
 					}
-					//System.out.println("true");
+					
 					if(nodeGraphicAttributesFieldMap.containsKey("type"))
 						type = nextLine[nodeGraphicAttributesFieldMap.get("type")];
 					if(nodeGraphicAttributesFieldMap.containsKey("width"))
@@ -180,10 +183,13 @@ public class DynHandlerCSV<T> extends AbstractCSVSource<T>{
 						addEdgeAttribute(dynamicNetwork, edge, pairs.getValue(), nextLine[pairs.getKey()], "string", nextLine[edgeFieldMap.get("StartTime")], nextLine[edgeFieldMap.get("EndTime")]);
 					}
 					
-					w = nextLine[edgeGraphicAttributesFieldMap.get("width")];
-					fill = nextLine[edgeGraphicAttributesFieldMap.get("fill")];
-					transparency = nextLine[edgeGraphicAttributesFieldMap.get("transparency")];
-					System.out.println("true");					
+					if(edgeGraphicAttributesFieldMap.containsKey("width"))
+						w = nextLine[edgeGraphicAttributesFieldMap.get("width")];
+					if(edgeGraphicAttributesFieldMap.containsKey("fill"))
+						fill = nextLine[edgeGraphicAttributesFieldMap.get("fill")];
+					if(edgeGraphicAttributesFieldMap.containsKey("transparency"))
+						transparency = nextLine[edgeGraphicAttributesFieldMap.get("transparency")];
+								
 					addEdgeGraphics(dynamicNetwork, edge, width, fill, transparency, nextLine[edgeFieldMap.get("StartTime")], nextLine[edgeFieldMap.get("EndTime")]);
 					
 				}

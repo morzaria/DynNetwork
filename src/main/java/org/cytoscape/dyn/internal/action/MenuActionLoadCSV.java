@@ -116,17 +116,12 @@ public class MenuActionLoadCSV<T, C> extends AbstractCyAction {
 		
 		File file = fileUtil.getFile(desktopApp.getJFrame(),
 				"Load Dynamic Network", FileUtil.LOAD, getFilters());
-
+		
 		CSVReader csvReader = null;
-		String[] nextLine;
-		HashMap<Integer, String> attributeFieldMap = new HashMap<Integer, String>();
-		HashMap<String, Integer> nodeFieldMap = new HashMap<String, Integer>();
-		HashMap<Integer, String> edgeAttributeFieldMap = new HashMap<Integer, String>();
-		HashMap<String, Integer> edgeFieldMap = new HashMap<String, Integer>();
 		
 		try {
 			csvReader = new CSVReader(new FileReader(file.getAbsolutePath()));
-			DynHandlerCSV<T> csvHandler = new DynHandlerCSV<T>(dynNetworkFactory, dynNetworkViewFactory, dynLayoutFactory, vizMapFactory, csvReader);
+			DynHandlerCSV<T> csvHandler = new DynHandlerCSV<T>(dynNetworkFactory, dynNetworkViewFactory, dynLayoutFactory, vizMapFactory, csvReader, file);
 			csvHandler.readNetwork();
 			
 		} catch (Exception ex) {
