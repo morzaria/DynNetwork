@@ -36,9 +36,11 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 /**
+ * Dialog for saving a chart as a .png, .jpeg file.
+ *  
  * @author Jimmy
  * 
- *         Dialog for saving a chart as a .png, .jpeg file.
+ *        
  */
 @SuppressWarnings("serial")
 public class SaveChartDialog extends JDialog implements ActionListener {

@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.dyn.internal.CyActivator;
+import org.cytoscape.dyn.internal.model.DynNetwork;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -44,6 +45,7 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 	private ChartPanel chartPanelForDialog;
 	private CyActivator<T, C> cyActivator;
 	private XYSeriesCollection dataset;
+	private DynNetwork<T> dynamicNetwork;
 
 	/**
 	 * @param timeSeries
@@ -51,11 +53,12 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 	 * @param dataset
 	 */
 	public GraphMetricsResultsPanel(JFreeChart timeSeries,
-			CyActivator<T, C> cyActivator, XYSeriesCollection dataset) {
+			CyActivator<T, C> cyActivator, XYSeriesCollection dataset, DynNetwork dynamicNetwork) {
 
 		this.timeSeries = timeSeries;
 		this.cyActivator = cyActivator;
 		this.dataset = dataset;
+		this.dynamicNetwork = dynamicNetwork;
 		initComponents();
 	}
 
@@ -77,7 +80,7 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 		closeTabButton.addActionListener(this);
 		closeTabButton.setToolTipText("Close this tab.");
 		helpButton = new JButton("Help");
-		helpButton.setToolTipText("Get help! Everyone needs it.");
+		helpButton.setToolTipText("Get help!");
 		helpButton.addActionListener(this);
 		buttonsPanel = new JPanel();
 		chartPanel = new ChartPanel(this.timeSeries);
@@ -206,7 +209,7 @@ public class GraphMetricsResultsPanel<T, C> extends JPanel implements
 	@Override
 	public String getTitle() {
 		// TODO Auto-generated method stub
-		return "Dynamic Graph Metrics Results";
+		return dynamicNetwork.getNetworkLabel();
 	}
 
 }

@@ -1,6 +1,6 @@
 /**
- * This task computes graph distance, eccentricity, closeness and radiality for each time interval using Dijkstra's algorithm.
- * */
+ * 
+ */
 package org.cytoscape.dyn.internal.graphMetrics;
 
 import java.util.ArrayList;
@@ -25,6 +25,16 @@ import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.dyn.internal.graphMetrics.DijkstraDistance;
+
+/**
+ * <code>DynamicDistEccCloseRad</code> computes Eccentricity,
+ * Closenness, Radiality and Centroid of nodes in
+ * undirected networks.
+ * 
+ * @author Jimmy
+ *
+ * @param <T>
+ */
 
 public class DynamicDistEccCloseRad<T> extends AbstractTask {
 

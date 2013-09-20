@@ -1,5 +1,5 @@
 /**
- * This task computes indegree and outdegree for each time interval.
+ * 
  */
 package org.cytoscape.dyn.internal.graphMetrics;
 
@@ -25,6 +25,14 @@ import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
+/**
+ * <code>DynamicInOutDegree</code> computes the indgree and 
+ * the outdegree of the node in directed networks.
+ * 
+ * @author Jimmy
+ *
+ * @param <T>
+ */
 public class DynamicInOutDegree<T> extends AbstractTask {
 
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;

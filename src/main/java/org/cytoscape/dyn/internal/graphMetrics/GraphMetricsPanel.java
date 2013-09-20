@@ -51,7 +51,7 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 	private JTable attributesTable;
 	private JTable edgeAttributesTable;
 	private JButton plotChartButton;
-	private JButton updateChartButton;
+	private JButton closeTab;
 	private CyActivator<T, C> cyactivator;
 	private DynNetwork<T> dynamicNetwork;
 
@@ -84,17 +84,17 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 		edgeTablePanel.setSize(new Dimension(250, 400));
 
 		plotChartButton = new JButton("Plot Selected Attributes");
-		updateChartButton = new JButton("Update Chart");
+		closeTab = new JButton("Close Tab");
 
 		plotChartButton.addActionListener(this);
-		updateChartButton.addActionListener(this);
+		closeTab.addActionListener(this);
 
 		buttonPanel = new JPanel();
 
 		buttonPanel.setLayout(new FlowLayout());
 
 		buttonPanel.add(plotChartButton);
-		buttonPanel.add(updateChartButton);
+		buttonPanel.add(closeTab);
 		buttonPanel.setBorder(BorderFactory.createTitledBorder(null, "Options",
 				TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION, new Font("SansSerif", 0, 12),
@@ -189,19 +189,21 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 			List<CyNode> selectedNodes = CyTableUtil.getNodesInState(
 					dynamicNetwork.getNetwork(), "selected", true);
 			List<CyEdge> selectedEdges = CyTableUtil.getEdgesInState(dynamicNetwork.getNetwork(), "selected", true);
-			// System.out.println(selectedNodes);
+			
 			GenerateChart<T> chartGenerator = new GenerateChart<T>(
 					this.dynamicNetwork, checkedAttributes, edgeCheckedAttributes, selectedNodes,selectedEdges);
 			JFreeChart timeSeries = chartGenerator.generateTimeSeries();
 			XYSeriesCollection dataset = chartGenerator.getDataset();
 			GraphMetricsResultsPanel<T, C> resultsPanel = new GraphMetricsResultsPanel<T, C>(
-					timeSeries, cyactivator, dataset);
+					timeSeries, cyactivator, dataset, dynamicNetwork);
 			cyactivator.getCyServiceRegistrar().registerService(resultsPanel,
 					CytoPanelComponent.class, new Properties());
 			cyactivator.getCySwingAppication().getCytoPanel(CytoPanelName.EAST).setState(CytoPanelState.DOCK);
 		}
-		if (e.getSource() == updateChartButton) {
-			cyactivator.getCyServiceRegistrar().unregisterService(this, CytoPanelComponent.class);
+		
+		if (e.getSource() == closeTab) {
+			
+			cyactivator.getCyServiceRegistrar().unregisterService(cyactivator.getCySwingAppication().getCytoPanel(CytoPanelName.EAST).getSelectedComponent(), CytoPanelComponent.class);
 		}
 	}
 }

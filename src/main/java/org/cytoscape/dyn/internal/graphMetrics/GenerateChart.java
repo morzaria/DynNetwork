@@ -1,6 +1,5 @@
 /**
- * This class is used to generate XYStepChart using JFreeChart
- *         library.
+ * 
  */
 package org.cytoscape.dyn.internal.graphMetrics;
 
@@ -19,6 +18,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 /**
+ * <code>GenerateChart</code> generates X-Y Step chart using JFreeChart.
+ * 
  * @author Jimmy
  */
 public class GenerateChart<T> {

@@ -3,13 +3,6 @@
  */
 package org.cytoscape.dyn.internal.graphMetrics;
 
-/**
- * This task computes Betweenness and Stress using Brandes' algorithm which takes O(VE) time for
- * unweighed graphs.
- * @author Jimmy
- *
- */
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +28,15 @@ import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+
+/**
+ * <code>DynamicDirectedBetweennesStress</code> computes Betweenness and Stress for 
+ * directed graphs using Brandes' algorithm which takes O(VE) time for unweighed graphs.
+ * 
+ * @author Jimmy
+ * 
+ * @param <T>
+ */
 
 public class DynamicDirectedBetweennessStress<T> extends AbstractTask {
 
@@ -78,12 +80,6 @@ public class DynamicDirectedBetweennessStress<T> extends AbstractTask {
 		DynNetworkFactory<T> dynNetFactory = new DynNetworkFactoryImpl<T>(
 				networkFactory, rootNetworkManager, dynNetManager, nameUtil);
 
-		// To get DynNetworkView which need to be passed to
-		// DynNetworkSnapshotImpl
-		// Collection<DynNetworkView<T>> dyncollection=new
-		// ArrayList<DynNetworkView<T>>();
-		// dyncollection=dynNetViewManager.getDynNetworkViews();
-		// Iterator<DynNetworkView<T>> it=dyncollection.iterator();
 		DynNetworkView<T> view = dynNetViewManager
 				.getDynNetworkView(cyNetworkView);
 		DynNetworkSnapshotImpl<T> networkSnapshot = new DynNetworkSnapshotImpl<T>(

@@ -27,9 +27,14 @@ import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskMonitor;
 
 /**
+ * <code>DynamicDirectedEccCloseRadCentro</code> computes Eccentricity,
+ * Closenness, Radiality and Centroid of nodes in directed networks.
+ * 
  * @author Jimmy
  * 
+ * @param <T>
  */
+
 public class DynamicDirectedEccCloseRadCentro<T> extends AbstractTask {
 
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;

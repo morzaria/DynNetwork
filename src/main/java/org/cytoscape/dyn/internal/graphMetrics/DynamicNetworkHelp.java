@@ -6,6 +6,11 @@ import javax.help.HelpBroker;
 import javax.help.HelpSet;
 
 
+/**
+ * 
+ * @author Jimmy
+ *
+ */
 public class DynamicNetworkHelp {
 	
 	private HelpBroker helpBroker;
