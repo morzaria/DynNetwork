@@ -217,9 +217,6 @@ public class DynamicDirectedBetweennessStress<T> extends AbstractTask {
 			}
 			startTime = endTime;
 		}
-
-		// System.out.println("Stress\n"+nodeTimeStressMap);
-		// System.out.println("Betweenness\n"+nodeTimeBetweennessMap);
 	}
 
 }

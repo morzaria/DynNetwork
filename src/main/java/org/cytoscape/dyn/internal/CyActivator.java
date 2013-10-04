@@ -70,8 +70,6 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TunableSetter;
 import org.cytoscape.work.undo.UndoSupport;
 import org.osgi.framework.BundleContext;
-import org.cytoscape.dyn.internal.graphMetrics.GraphMetricsPanel;
-import org.cytoscape.dyn.internal.graphMetrics.GraphMetricsResultsPanel;
 import org.cytoscape.dyn.internal.graphMetrics.GraphMetricsTasks;
 
 /**
@@ -187,7 +185,7 @@ public class CyActivator<T, C> extends AbstractCyActivator {
 		// Properties myLayoutProps2 = new Properties();
 		// myLayoutProps2.setProperty("preferredMenu","Dynamic VizMaps");
 
-		GraphMetricsTasks<T, C> c = new GraphMetricsTasks<T, C>(
+		GraphMetricsTasks<T, C> c = new GraphMetricsTasks<T, C>(taskManager,
 				dynNetViewManager, cyNetworkViewManagerServiceRef,
 				cyNetworkFactoryServiceRef, cyRootNetworkManagerServiceRef,
 				cyNetworkNamingServiceRef, dynNetManager, this);

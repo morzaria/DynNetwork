@@ -10,6 +10,8 @@ import org.cytoscape.task.AbstractNetworkViewTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.Tunable;
 
 public class GraphMetricsTasks<T, C> extends AbstractNetworkViewTaskFactory {
 
@@ -19,8 +21,10 @@ public class GraphMetricsTasks<T, C> extends AbstractNetworkViewTaskFactory {
 	private CyNetworkNaming nameUtil;
 	private DynNetworkManagerImpl<T> dynNetworkManager;
 	private CyActivator<T, C> cyActivator;
+	private TaskManager<T, C> taskManager;
 
 	/**
+	 * @param taskManager
 	 * @param dynNetViewManager
 	 * @param cyNetworkViewManagerServiceRef
 	 * @param cyNetworkFactoryServiceRef
@@ -28,19 +32,22 @@ public class GraphMetricsTasks<T, C> extends AbstractNetworkViewTaskFactory {
 	 * @param cyNetworkNamingServiceRef
 	 * @param dynNetManager
 	 */
-	public GraphMetricsTasks(DynNetworkViewManagerImpl<T> dynNetViewManager,
+	public GraphMetricsTasks(TaskManager<T, C> taskManager,
+			DynNetworkViewManagerImpl<T> dynNetViewManager,
 			CyNetworkViewManager cyNetworkViewManagerServiceRef,
 			CyNetworkFactory cyNetworkFactoryServiceRef,
 			CyRootNetworkManager cyRootNetworkManagerServiceRef,
 			CyNetworkNaming cyNetworkNamingServiceRef,
 			DynNetworkManagerImpl<T> dynNetManager,
 			CyActivator<T, C> cyActivator) {
+		this.taskManager = taskManager;
 		this.dynNetViewManager = dynNetViewManager;
 		this.networkFactory = cyNetworkFactoryServiceRef;
 		this.rootNetworkManager = cyRootNetworkManagerServiceRef;
 		this.nameUtil = cyNetworkNamingServiceRef;
 		this.dynNetworkManager = dynNetManager;
 		this.cyActivator = cyActivator;
+
 	}
 
 	/*
@@ -54,25 +61,33 @@ public class GraphMetricsTasks<T, C> extends AbstractNetworkViewTaskFactory {
 	@Override
 	public TaskIterator createTaskIterator(CyNetworkView arg0) {
 		// TODO Auto-generated method stub
-		return new TaskIterator(
-				/*
-				 * new DynamicDirectedBetweennessStress<T>(dynNetViewManager,
-				 * arg0, networkFactory, rootNetworkManager, nameUtil,
-				 * dynNetworkManager),new
-				 * DynamicDirectedEccCloseRadCentro<T>(dynNetViewManager, arg0,
-				 * networkFactory, rootNetworkManager, nameUtil,
-				 * dynNetworkManager)
-				 */new EigenVector<T>(dynNetViewManager, arg0, networkFactory,
-						rootNetworkManager, nameUtil, dynNetworkManager),
-				new DynamicDistEccCloseRad<T>(dynNetViewManager, arg0,
-						networkFactory, rootNetworkManager, nameUtil,
-						dynNetworkManager), new DynamicBetweennessStress<T>(
-						dynNetViewManager, arg0, networkFactory,
-						rootNetworkManager, nameUtil, dynNetworkManager),
-				new DynamicInOutDegree<T>(dynNetViewManager, arg0,
-						networkFactory, rootNetworkManager, nameUtil,
-						dynNetworkManager), new GraphMetricsPanelTask<T, C>(
-						cyActivator, dynNetViewManager, arg0));
+		DynDirectedNetworkTask treatNetworkDirected = new DynDirectedNetworkTask();
+		TaskIterator iterator = new TaskIterator(treatNetworkDirected);
+		taskManager.execute(iterator);
+		if (treatNetworkDirected.wantsDirected())
+			return new TaskIterator(new DynamicDirectedBetweennessStress<T>(
+					dynNetViewManager, arg0, networkFactory,
+					rootNetworkManager, nameUtil, dynNetworkManager),
+					new DynamicDirectedEccCloseRadCentro<T>(dynNetViewManager,
+							arg0, networkFactory, rootNetworkManager, nameUtil,
+							dynNetworkManager), new DynamicInOutDegree<T>(
+							dynNetViewManager, arg0, networkFactory,
+							rootNetworkManager, nameUtil, dynNetworkManager),
+					new GraphMetricsPanelTask<T, C>(cyActivator,
+							dynNetViewManager, arg0));
+		else
+			return new TaskIterator(new EigenVector<T>(dynNetViewManager, arg0,
+					networkFactory, rootNetworkManager, nameUtil,
+					dynNetworkManager), new DynamicDistEccCloseRad<T>(
+					dynNetViewManager, arg0, networkFactory,
+					rootNetworkManager, nameUtil, dynNetworkManager),
+					new DynamicBetweennessStress<T>(dynNetViewManager, arg0,
+							networkFactory, rootNetworkManager, nameUtil,
+							dynNetworkManager), new DynamicDegree<T>(
+							dynNetViewManager, arg0, networkFactory,
+							rootNetworkManager, nameUtil, dynNetworkManager),
+					new GraphMetricsPanelTask<T, C>(cyActivator,
+							dynNetViewManager, arg0));
 	}
 
 }

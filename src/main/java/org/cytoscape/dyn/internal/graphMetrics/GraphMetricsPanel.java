@@ -203,7 +203,7 @@ public class GraphMetricsPanel<T, C> extends JPanel implements
 		
 		if (e.getSource() == closeTab) {
 			
-			cyactivator.getCyServiceRegistrar().unregisterService(cyactivator.getCySwingAppication().getCytoPanel(CytoPanelName.EAST).getSelectedComponent(), CytoPanelComponent.class);
+			cyactivator.getCyServiceRegistrar().unregisterService(/*cyactivator.getCySwingAppication().getCytoPanel(CytoPanelName.EAST).getSelectedComponent()*/this, CytoPanelComponent.class);
 		}
 	}
 }

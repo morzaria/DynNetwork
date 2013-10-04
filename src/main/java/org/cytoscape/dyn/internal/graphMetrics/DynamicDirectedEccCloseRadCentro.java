@@ -12,7 +12,6 @@ import org.cytoscape.dyn.internal.model.DynNetwork;
 import org.cytoscape.dyn.internal.model.DynNetworkFactory;
 import org.cytoscape.dyn.internal.model.DynNetworkFactoryImpl;
 import org.cytoscape.dyn.internal.model.DynNetworkManagerImpl;
-import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshot;
 import org.cytoscape.dyn.internal.model.snapshot.DynNetworkSnapshotImpl;
 import org.cytoscape.dyn.internal.model.tree.DynInterval;
 import org.cytoscape.dyn.internal.model.tree.DynIntervalDouble;
@@ -216,13 +215,13 @@ public class DynamicDirectedEccCloseRadCentro<T> extends AbstractTask {
 			// System.out.println(nodeClosenessMap);
 
 			for (CyNode node1 : nodeList) {
-				dynNetFactory.setAttributesUpdate(
+				/*dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
 						"Centroid",
 						Double.toString(nodeTimeCentroidMap.get(
 								snapshotInterval.getStart()).get(node1)),
-						"real", startTime.toString(), endTime.toString());
+						"real", startTime.toString(), endTime.toString());*/
 				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
@@ -247,7 +246,7 @@ public class DynamicDirectedEccCloseRadCentro<T> extends AbstractTask {
 			}
 			startTime = endTime;
 		}
-		dynNetFactory.finalizeNetwork(dynamicnetwork);
+		//dynNetFactory.finalizeNetwork(dynamicnetwork);
 	}
 
 }

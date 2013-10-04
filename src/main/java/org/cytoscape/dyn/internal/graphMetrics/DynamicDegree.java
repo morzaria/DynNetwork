@@ -26,14 +26,13 @@ import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
 /**
- * <code>DynamicInOutDegree</code> computes the indgree and 
- * the outdegree of the node in directed networks.
+ * <code>DynamicDegree</code> computes the degree of nodes in directed networks.
  * 
  * @author Jimmy
  *
  * @param <T>
  */
-public class DynamicInOutDegree<T> extends AbstractTask {
+public class DynamicDegree<T> extends AbstractTask {
 
 	private DynNetworkViewManagerImpl<T> dynNetViewManager;
 	private CyNetworkView cyNetworkView;
@@ -53,7 +52,7 @@ public class DynamicInOutDegree<T> extends AbstractTask {
 	 * @param nameUtil
 	 * @param dynNetManager
 	 */
-	public DynamicInOutDegree(DynNetworkViewManagerImpl<T> dynNetViewManager,
+	public DynamicDegree(DynNetworkViewManagerImpl<T> dynNetViewManager,
 			CyNetworkView cyNetworkView, CyNetworkFactory networkFactory,
 			CyRootNetworkManager rootNetworkManager, CyNetworkNaming nameUtil,
 			DynNetworkManagerImpl<T> dynNetManager) {
@@ -132,17 +131,12 @@ public class DynamicInOutDegree<T> extends AbstractTask {
 				dynNetFactory.setAttributesUpdate(
 						dynamicnetwork,
 						node1,
-						"InDegree",
+						"Degree",
 						Double.toString(nodeTimeInDegreeMap.get(
-								snapshotInterval.getStart()).get(node1)),
+								snapshotInterval.getStart()).get(node1)+nodeTimeOutDegreeMap.get(
+										snapshotInterval.getStart()).get(node1)),
 						"real", startTime.toString(), endTime.toString());
-				dynNetFactory.setAttributesUpdate(
-						dynamicnetwork,
-						node1,
-						"OutDegree",
-						Double.toString(nodeTimeOutDegreeMap.get(
-								snapshotInterval.getStart()).get(node1)),
-						"real", startTime.toString(), endTime.toString());
+				
 			}
 			startTime = endTime;
 
